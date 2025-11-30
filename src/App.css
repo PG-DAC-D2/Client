@@ -1,0 +1,11 @@
+.d-center{
+        display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hsbetween{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
