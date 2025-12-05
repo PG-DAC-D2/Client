@@ -2,42 +2,42 @@ import React from "react";
 
 function OrderSummary({ cartItems = [] }) {
   const subTotal = cartItems.reduce(
-    (sum, item) => sum + item.price * (item.qty || 1),
+    (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
 
   const discount = 60; // static for now
   const delivery = 0;
   const tax = 20;
-  const total = subTotal - discount + delivery + tax;
+  const total = Math.max(0, subTotal - discount + delivery + tax);
 
   return (
-    <div className="order-card">
-      <h3 className="order-title">Order Summary</h3>
+    <div className="cart-order-card">
+      <h3 className="cart-order-title">Order Summary</h3>
 
-      <div className="order-row">
+      <div className="cart-order-row">
         <span>Sub Total :</span>
         <span>₹{subTotal.toFixed(2)}</span>
       </div>
-      <div className="order-row">
+      <div className="cart-order-row">
         <span>Discount :</span>
-        <span className="order-discount">-₹{discount.toFixed(2)}</span>
+        <span className="cart-order-discount">-₹{discount.toFixed(2)}</span>
       </div>
-      <div className="order-row">
+      <div className="cart-order-row">
         <span>Delivery Charge :</span>
         <span>₹{delivery.toFixed(2)}</span>
       </div>
-      <div className="order-row">
+      <div className="cart-order-row">
         <span>Estimated Tax :</span>
         <span>₹{tax.toFixed(2)}</span>
       </div>
 
-      <div className="order-row order-total-row">
+      <div className="cart-order-row cart-order-total-row">
         <span>Total Amount</span>
-        <span className="order-total">₹{total.toFixed(2)}</span>
+        <span className="cart-order-total">₹{total.toFixed(2)}</span>
       </div>
 
-      <button className="checkout-btn">Checkout</button>
+      <button className="cart-checkout-btn">Checkout</button>
     </div>
   );
 }
