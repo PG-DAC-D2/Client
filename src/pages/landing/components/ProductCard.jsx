@@ -1,8 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addItem } from "../../../app/slices/cartSlice";
 
 function ProductCard({ _id, imageUrl, name, tags, rating, review, sizes, rate, onAddToCart }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // handle card click
   const handleCardClick = () => {
@@ -12,8 +15,16 @@ function ProductCard({ _id, imageUrl, name, tags, rating, review, sizes, rate, o
   // stop click event from bubbling when Add to cart is clicked
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    console.log("Add to cart clicked for product ID:", _id);
-    // if (onAddToCart) onAddToCart(_id);
+    dispatch(addItem({
+      id: _id,
+      name: name,
+      price: rate,
+      image: imageUrl?.[0] || imageUrl,
+      size: sizes?.[0] || 'M',
+      color: tags?.[0] || '',
+      category: tags?.[0] || '',
+    }));
+    navigate('/cart');
   };
 
   return (

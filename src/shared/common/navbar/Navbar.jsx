@@ -30,8 +30,10 @@ function Navbar() {
                     <Link to="/wishlist">
                         <span className="material-icons icon" title="Wishlist">favorite_border</span>
                     </Link>
-                    <span className="material-icons icon" title="Cart">shopping_cart</span>
-                    <Link to="/account">
+                    <Link to="/cart">
+                        <span className="material-icons icon" title="Cart">shopping_cart</span>
+                    </Link>
+                                        <Link to="/account">
                         <span className="material-icons icon" title="Account">account_circle</span>
                     </Link>
                 </div>

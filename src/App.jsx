@@ -7,6 +7,7 @@ import Landing from './pages/landing/Landing'
 import Register from './pages/auth/Register'
 import Login from './pages/auth/Login'
 import Wishlist from './pages/wishlist/Wishlist'
+import WishlistDetail from './pages/wishlist/components/WishlistDetail'
 import Cart from './pages/cart/Cart'
 import Search from './pages/search/Search'
 import Account from './pages/account/Account'
@@ -41,6 +42,10 @@ function App() {
         <Route
           path='wishlist'
           element={<Wishlist />}
+        />
+        <Route
+          path='wishlist/:id'
+          element={<WishlistDetail />}
         />
         <Route
           path='cart'
