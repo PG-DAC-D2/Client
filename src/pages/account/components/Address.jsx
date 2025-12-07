@@ -1,4 +1,6 @@
 import React from "react";
+import { FiPhone } from "react-icons/fi";
+
 
 function Address() {
   const addresses = [
@@ -37,8 +39,8 @@ function Address() {
             {item.address}
           </p>
 
-          <p className="text-muted mb-2" style={{ fontSize: "14px" }}>
-            📞 {item.phone}
+          <p className="text-muted mb-2" style={{ fontSize: "14px", display: "flex", alignItems: "center", gap: "6px" }}>
+            <FiPhone size={15} /> {item.phone}
           </p>
 
           <div>

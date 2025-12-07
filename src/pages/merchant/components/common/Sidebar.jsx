@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { FiHome, FiBox, FiClipboard, FiBarChart2, FiDollarSign, FiSettings, FiLogOut } from "react-icons/fi";
 import "../../Merchant.css";
 
 export default function Sidebar() {
@@ -20,7 +21,10 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>📊 Dashboard</span>
+          <div className="nav-icon-label">
+            <FiHome size={18} />
+            <span>Dashboard</span>
+            </div>
         </NavLink>
 
         <NavLink
@@ -29,7 +33,11 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>📦 Products</span>
+
+          <div className="nav-icon-label">
+            <FiBox size={18} />
+            <span>Products</span>
+          </div>
         </NavLink>
 
         <NavLink
@@ -38,7 +46,11 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>🧾 Orders</span>
+
+          <div className="nav-icon-label">
+            <FiClipboard size={18} />
+            <span>Orders</span>
+          </div>
         </NavLink>
 
         <NavLink
@@ -47,7 +59,10 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>📈 Analytics</span>
+          <div className="nav-icon-label">
+            <FiBarChart2 size={18} />
+            <span>Analytics</span>
+          </div>
         </NavLink>
 
         <NavLink
@@ -56,17 +71,25 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>💰 Payouts</span>
+
+          <div className="nav-icon-label">
+            <FiDollarSign size={18} />
+            <span>Payouts</span>
+          </div>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to="/merchant/settings"
           className={({ isActive }) =>
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-          <span>⚙️ Settings</span>
-        </NavLink>
+
+          <div className="nav-icon-label">
+            <FiSettings size={18} />
+            <span>Settings</span>
+          </div>
+        </NavLink> */}
 
       </nav>
 
@@ -83,9 +106,13 @@ export default function Sidebar() {
             cursor: "pointer",
             color: "#d9534f",
             marginTop: "20px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
-          🚪 Logout
+          <FiLogOut size={18} />
+          Logout
         </button>
       </div>
 

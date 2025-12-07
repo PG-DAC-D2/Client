@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import { FiBox, FiHeart, FiUser, FiHome, FiLogOut, FiChevronRight } from "react-icons/fi";
 
 function AccountSidebar({ activeTab, setActiveTab }) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menuItems = [
-    { key: "orders", label: "Orders", icon: "📦" },
-    { key: "wishlist", label: "Favorites", icon: "❤️" },
-    { key: "personal", label: "Personal Data", icon: "👤" },
-    { key: "address", label: "Addresses", icon: "🏠" },
+    { key: "orders", label: "Orders", icon: <FiBox /> },
+    { key: "wishlist", label: "Favorites", icon: <FiHeart /> },
+    { key: "personal", label: "Personal Data", icon: <FiUser /> },
+    { key: "address", label: "Addresses", icon: <FiHome /> },
   ];
 
   return (

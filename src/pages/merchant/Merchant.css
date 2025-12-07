@@ -12,6 +12,13 @@
   margin: auto;
 }
 
+.nav-icon-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
 .merchant-nav-spacer {
   height: 85px;
 }
