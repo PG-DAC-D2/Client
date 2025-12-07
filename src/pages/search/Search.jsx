@@ -12,7 +12,8 @@ function Search() {
       rating: 4.8,
       reviews: 1023,
       sizes: ["XS", "S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1740711152088-88a009e877bb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880",
+      image:
+        "https://images.unsplash.com/photo-1740711152088-88a009e877bb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880",
     },
     {
       id: 2,
@@ -22,7 +23,8 @@ function Search() {
       rating: 4.5,
       reviews: 125,
       sizes: ["XS", "S", "M", "L", "XL"],
-      image: "https://plus.unsplash.com/premium_photo-1755534537502-1529cf891cdf?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
+      image:
+        "https://plus.unsplash.com/premium_photo-1755534537502-1529cf891cdf?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
     },
     {
       id: 3,
@@ -32,7 +34,8 @@ function Search() {
       rating: 4.4,
       reviews: 224,
       sizes: ["XS", "S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1571821324176-52ff15e96348?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
+      image:
+        "https://images.unsplash.com/photo-1571821324176-52ff15e96348?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
     },
     {
       id: 3,
@@ -42,7 +45,8 @@ function Search() {
       rating: 4.4,
       reviews: 224,
       sizes: ["XS", "S", "M", "L", "XL"],
-      image: "https://plus.unsplash.com/premium_photo-1705554519628-5d17d796e488?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
+      image:
+        "https://plus.unsplash.com/premium_photo-1705554519628-5d17d796e488?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
     },
   ];
 
@@ -84,7 +88,6 @@ function Search() {
         </div>
       </div>
     </>
-
   );
 }
 
