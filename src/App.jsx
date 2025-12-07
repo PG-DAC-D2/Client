@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom'
+
 import Landing from './pages/landing/Landing'
 import Register from './pages/auth/Register'
 import Login from './pages/auth/Login'
@@ -12,10 +13,14 @@ import Cart from './pages/cart/Cart'
 import Search from './pages/search/Search'
 import Account from './pages/account/Account'
 import Product from './pages/product/Product'
+
 import Merchant from './pages/merchant/Merchant'
-import Admin from './pages/admin/Admin'
+import MerchantDashboard from './pages/merchant/components/merchant/MerchantDashboard'
+import MerchantProducts from './pages/merchant/components/merchant/MerchantProducts'
+import AddProduct from './pages/merchant/components/merchant/AddProduct'
 import MerchantAccounts from './pages/merchant/components/accounts/MerchantAccounts'
-// import Accounts from './pages/merchant/components/Accounts'
+
+import Admin from './pages/admin/Admin'
 
 function App() {
 
@@ -30,14 +35,37 @@ function App() {
           path='login'
           element={<Login />}
         />
+        
         <Route
           path='merchant'
           element={<Merchant />}
-        />
-        <Route
-          path='merchant/accounts'
-          element={<MerchantAccounts />}
-        />
+        >
+          <Route
+            index
+            element={<MerchantDashboard />}
+          />
+
+          <Route
+            path='dashboard'
+            element={<MerchantDashboard />}
+          />
+
+          <Route
+            path='products'
+            element={<MerchantProducts />}
+          />
+
+          <Route
+            path='products/add'
+            element={<AddProduct />}
+          />
+
+          <Route
+            path='accounts'
+            element={<MerchantAccounts />}
+          />
+        </Route>
+
         <Route
           path='admin'
           element={<Admin />}
