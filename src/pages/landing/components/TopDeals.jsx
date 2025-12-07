@@ -1,8 +1,11 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { addItem } from '../../../app/slices/cartSlice'
 
 function TopDeals() {
-
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const products = [
         {
             id: 1,
@@ -78,7 +81,25 @@ function TopDeals() {
                             </div>
                             <div className="price-cart">
                                 <p className="price">{item.price}</p>
-                                <button className="cart-btn">Add to cart</button>
+                                <button
+                                    className="cart-btn"
+                                    onClick={() => {
+                                        // Extract numeric price from string like "₹2,499.00"
+                                        const numericPrice = Number(item.price.replace(/[^\d.]/g, ''));
+                                        dispatch(addItem({
+                                            id: `top-${item.id}`,
+                                            name: item.name,
+                                            price: numericPrice,
+                                            image: item.image,
+                                            size: item.sizes?.[0] || 'M',
+                                            color: item.category,
+                                            category: item.category,
+                                        }));
+                                        navigate('/cart');
+                                    }}
+                                >
+                                    Add to cart
+                                </button>
                             </div>
                         </div>
                     </div>

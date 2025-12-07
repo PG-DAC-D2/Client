@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProductById, fetchProducts } from "../../app/slices/productSlice";
 import "./Product.css";
@@ -8,6 +8,7 @@ import Navbar from "../../shared/common/navbar/Navbar";
 
 function Product() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { product, items, loading, error } = useSelector((state) => state.products);
 
@@ -55,7 +56,12 @@ function Product() {
 
                         <div className="product-price-kd">₹{product.rate}</div>
 
-                        <button className="add-cart-btn-kd">Add to Cart</button>
+                        <button
+                            className="add-cart-btn-kd"
+                            onClick={() => navigate('/cart')}
+                        >
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
 

@@ -1,0 +1,14 @@
+.invite-modal {
+  max-width: 450px;
+}
+
+.invite-form {
+  padding: 24px;
+}
+
+.form-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
