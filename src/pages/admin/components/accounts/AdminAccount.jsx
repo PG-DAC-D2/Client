@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import "./AdminAccount.css";
 import PersonalInfo from "../../../account/components/PersonalInfo";
 import Address from "../../../account/components/Address";
-import Wishlist from "../../../account/components/Wishlist";
-import Orders from "../../../account/components/Orders";
-import AccountSidebar from "../../../account/components/AccountSidebar";
 import AdminNavbar from "../common/AdminNavbar";
 import AdminAccountSidebar from "./AdminAccountSidebar";
 

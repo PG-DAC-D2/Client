@@ -96,7 +96,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="merchant-sidebar-footer">
         <button
-          onClick={() => (window.location.href = "/")}
+          onClick={() => (window.location.href = "/login")}
           className="btn-ghost"
           style={{
             background: "none",
