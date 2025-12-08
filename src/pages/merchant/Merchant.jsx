@@ -4,7 +4,7 @@ import "./Merchant.css";
 import Sidebar from "./components/common/Sidebar";
 import { Outlet } from "react-router-dom";
 
-function Merchant() {
+function Admin() {
   return (
     <>
       <Navbar />
@@ -14,9 +14,7 @@ function Merchant() {
 
       <div className="merchant-page-bg">
         <div className="merchant-container">
-
           <div className="row gx-4 gy-4">
-
             {/* Sidebar */}
             <div className="col-lg-3 col-md-4">
               <aside className="merchant-sidebar-card">
@@ -30,7 +28,6 @@ function Merchant() {
                 <Outlet />
               </main>
             </div>
-
           </div>
         </div>
       </div>
@@ -38,4 +35,4 @@ function Merchant() {
   );
 }
 
-export default Merchant;
+export default Admin;
