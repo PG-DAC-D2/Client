@@ -45,7 +45,9 @@ function Login() {
             />
           </div>
 
-          <button className="auth-btn">Login</button>
+          <Link to="/">
+            <button className="auth-btn">Login</button>
+          </Link>
 
           <p className="auth-footer">
             Don't have an account? <Link to="/register">Create one</Link>

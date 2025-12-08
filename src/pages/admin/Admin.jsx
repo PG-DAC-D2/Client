@@ -3,11 +3,12 @@ import Navbar from "../../shared/common/navbar/Navbar";
 import "./Admin.css";
 import Sidebar from "./components/common/Sidebar";
 import { Outlet } from "react-router-dom";
+import AdminNavbar from "./components/common/AdminNavbar";
 
 function Admin() {
   return (
     <>
-      <Navbar />
+      <AdminNavbar />
 
       {/* Space below fixed navbar */}
       <div className="merchant-nav-spacer" />

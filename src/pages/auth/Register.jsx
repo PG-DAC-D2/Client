@@ -80,7 +80,9 @@ function Register() {
             />
           </div>
 
-          <button className="auth-btn">Register</button>
+          <Link to='/login'>
+            <button className="auth-btn">Register</button>
+          </Link>
 
           <p className="auth-footer">
             Already have an account? <Link to="/login">Login</Link>

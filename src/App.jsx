@@ -23,7 +23,7 @@ import MerchantAccounts from "./pages/merchant/components/accounts/MerchantAccou
 import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/components/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/components/admin/AdminProducts";
-import AdminAccounts from "./pages/admin/components/accounts/AdminAccounts";
+import AdminAccount from "./pages/admin/components/accounts/AdminAccount";
 import Merchants from "./pages/admin/components/admin/Merchant";
 import AdminOrders from "./pages/admin/components/admin/AdminOrders";
 import Analytics from "./pages/admin/components/admin/Analytics";
@@ -59,11 +59,8 @@ function App() {
           <Route path="merchants" element={<Merchants />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="analytics" element={<Analytics />} />
-
-          {/* <Route path="products/add" element={<AddProduct />} /> */}
-
-          <Route path="accounts" element={<AdminAccounts />} />
         </Route>
+          <Route path="admin/account" element={<AdminAccount />} />
         <Route path="register" element={<Register />} />
 
         <Route path="/" element={<Landing />} />

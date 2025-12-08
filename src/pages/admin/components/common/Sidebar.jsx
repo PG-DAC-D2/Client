@@ -17,7 +17,7 @@ export default function Sidebar() {
       {/* Brand / Title */}
       <div className="merchant-sidebar-brand">
         <h4 style={{ fontWeight: 700, marginBottom: "18px" }}>
-          Merchant Panel
+          Admin Panel
         </h4>
       </div>
 
@@ -87,7 +87,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="merchant-sidebar-footer">
         <button
-          onClick={() => (window.location.href = "/")}
+          onClick={() => (window.location.href = "/login")}
           className="btn-ghost"
           style={{
             background: "none",

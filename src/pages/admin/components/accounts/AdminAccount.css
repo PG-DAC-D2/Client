@@ -1,0 +1,354 @@
+.account-page-bg {
+    background: #f5f5f5;
+    padding-bottom: 60px;
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Center layout like Landing page */
+.account-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: auto;
+}
+
+.account-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #111;
+}
+
+.sidebar-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(34, 34, 34, 0.09);
+}
+
+.sidebar-title {
+    font-weight: 600;
+    font-size: 17px;
+    color: #222;
+    margin-bottom: 15px;
+}
+
+.sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    background: #fafafa;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    border: 1.5px solid transparent;
+}
+
+.sidebar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-icon {
+    font-size: 20px;
+}
+
+.sidebar-arrow {
+    color: #b1b1b1;
+    font-size: 18px;
+}
+
+.sidebar-item:hover {
+    background: #f0f0f0;
+}
+
+.sidebar-item.active {
+    background: #e6f3ff;
+    border-color: #007aff;
+    font-weight: 600;
+}
+
+/* Sign Out */
+.sidebar-item.logout {
+    margin-top: 12px;
+    color: #d9534f;
+}
+
+.sidebar-item.logout:hover {
+    background: #f8d7da;
+}
+
+
+.account-right-card {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(34, 34, 34, 0.09);
+    min-height: 550px;
+}
+
+.section-card {
+    padding: 5px;
+}
+
+.section-card h4 {
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #444;
+}
+
+/* Save Button */
+.btn-save {
+    background-color: #0b8a5f;
+    color: white;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.btn-save:hover {
+    background-color: #066946;
+}
+
+/* ========================================================= */
+/* ORDER CARD (Shopy Layout + Landing Look) */
+/* ========================================================= */
+
+.order-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 18px;
+    border: 1px solid #eaeaea;
+    transition: 0.25s ease;
+    box-shadow: 0 2px 12px rgba(34, 34, 34, 0.06);
+}
+
+.order-card:hover {
+    background: #fafafa;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 18px rgba(34, 34, 34, 0.12);
+}
+
+.order-left {
+    display: flex;
+    gap: 10px;
+}
+
+.thumb {
+    width: 68px;
+    height: 68px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #eee;
+    box-shadow: 0 2px 10px rgba(34, 34, 34, 0.08);
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.25s ease;
+}
+
+.order-card:hover .thumb img {
+    transform: scale(1.07);
+}
+
+.order-info {
+    flex: 1;
+}
+
+/* Order text */
+.order-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+.order-value {
+    font-size: 14px;
+    color: #222;
+}
+
+.order-total {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+/* Status badge */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-delivered {
+    background: #1ca74a20;
+    color: #1ca74a;
+}
+
+.status-processing {
+    background: #f7c94820;
+    color: #e69f00;
+}
+
+/* Buttons */
+.order-btn {
+    border: 1.5px solid #111;
+    background: white;
+    padding: 7px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.order-btn:hover {
+    background: #111;
+    color: white;
+}
+
+/* Cancel */
+.order-btn.cancel {
+    border-color: #d9534f;
+    color: #d9534f;
+}
+
+.order-btn.cancel:hover {
+    background: #d9534f;
+    color: white;
+}
+
+/* ========================================================= */
+/* WISHLIST PRODUCT CARDS */
+/* ========================================================= */
+
+.product-card {
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(34, 34, 34, 0.09);
+    transition: 0.25s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(34, 34, 34, 0.18);
+}
+
+.img-wrap {
+    position: relative;
+    height: 230px;
+    background: #f2f2f2;
+    overflow: hidden;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.25s ease;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.08);
+}
+
+/* Hover overlay */
+.img-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.25s ease;
+}
+
+.product-card:hover .img-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.overlay-btn {
+    background: #ff0066;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.25s ease;
+}
+
+.overlay-btn:hover {
+    background: #d40054;
+}
+
+.overlay-btn.outline {
+    background: white;
+    color: #ff0066;
+    border: 2px solid #ff0066;
+}
+
+.overlay-btn.outline:hover {
+    background: #ff0066;
+    color: white;
+}
+
+/* PRODUCT BODY */
+.product-body {
+    padding: 15px;
+}
+
+.product-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+    color: #333;
+}
+
+.product-price {
+    font-weight: 700;
+    font-size: 16px;
+    color: #111;
+}
+
+/* ========================================================= */
+/* RESPONSIVE */
+/* ========================================================= */
+
+@media (max-width: 767px) {
+    .order-card {
+        flex-direction: column;
+    }
+
+    .img-wrap {
+        height: 190px;
+    }
+}
