@@ -1,8 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate("/search", { state: { searchQuery: searchQuery.trim() } });
+        } else {
+            navigate("/search");
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleSearch(e);
+        }
+    };
+
     return (
         <div>
             <header className="header">
@@ -20,10 +38,18 @@ function Navbar() {
                 </div>
 
                 {/* Search Bar */}
-                <div className="search-bar">
-                    <input type="text" placeholder="Search for products..." />
-                    <span className="material-icons search-icon">search</span>
-                </div>
+                <form className="search-bar" onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        placeholder="Search for products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                    />
+                    <button type="submit" className="search-icon-btn">
+                        <span className="material-icons search-icon">search</span>
+                    </button>
+                </form>
 
                 {/* Icons */}
                 <div className="icons">
