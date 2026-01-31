@@ -1,12 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../app/slices/authSlice";
 
 function Navbar() {
   const { isAuthenticated, role } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate("/search", { state: { searchQuery: searchQuery.trim() } });
+    } else {
+      navigate("/search");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,17 +38,25 @@ function Navbar() {
             <div className="logo me-5 d-center">Vanilo</div>
           </Link>
 
+          {/* Search Bar */}
+          <form className="search-bar" onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Search for products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <button type="submit" className="search-icon-btn">
+              <span className="material-icons search-icon">search</span>
+            </button>
+          </form>
+
           {/* Address */}
           <div className="address">
             <p className="address-line1">Deliver to</p>
             <p className="address-line2">Pune, Maharashtra</p>
           </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="search-bar">
-          <input type="text" placeholder="Search for products..." />
-          <span className="material-icons search-icon">search</span>
         </div>
 
         {/* Icons */}
