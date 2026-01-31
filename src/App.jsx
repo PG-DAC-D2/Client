@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUser } from "./app/slices/authSlice";
 
 import Landing from "./pages/landing/Landing";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
+import CustomerLogin from "./pages/auth/CustomerLogin";
+import MerchantLogin from "./pages/auth/MerchantLogin";
+import AdminLogin from "./pages/auth/AdminLogin";
+import CustomerRegister from "./pages/auth/CustomerRegister";
+import MerchantRegister from "./pages/auth/MerchantRegister";
+import AdminRegister from "./pages/auth/AdminRegister";
+import AuthLanding from "./pages/auth/AuthLanding";
 import Wishlist from "./pages/wishlist/Wishlist";
 import WishlistDetail from "./pages/wishlist/components/WishlistDetail";
 import Cart from "./pages/cart/Cart";
@@ -29,39 +38,66 @@ import AdminOrders from "./pages/admin/components/admin/AdminOrders";
 import Analytics from "./pages/admin/components/admin/Analytics";
 
 function App() {
+  const dispatch = useDispatch();
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    try {
+      dispatch(loadUser());
+      
+    } catch (error) {
+      
+    }
+  }, [dispatch]);
+
   return (
     <div>
       <Routes>
-        {/* <Route
-          path='/'
-          element={<Navigate to='/login' />}
-        /> */}
-        <Route path="login" element={<Login />} />
-
-        <Route path="merchant" element={<Merchant />}>
-          <Route index element={<MerchantDashboard />} />
-
-          <Route path="dashboard" element={<MerchantDashboard />} />
-
-          <Route path="products" element={<MerchantProducts />} />
-
-          <Route path="products/add" element={<AddProduct />} />
-
-          <Route path="accounts" element={<MerchantAccounts />} />
-        </Route>
-
-        <Route path="admin" element={<Admin />}>
-          <Route index element={<AdminDashboard />} />
-
-          <Route path="dashboard" element={<AdminDashboard />} />
-
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="merchants" element={<Merchants />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="analytics" element={<Analytics />} />
-        </Route>
-          <Route path="admin/account" element={<AdminAccount />} />
+        <Route path="auth" element={<AuthLanding />} />
+        <Route
+          path="login"
+          element={isAuthenticated ? <Navigate to="/" /> : <Login />}
+        />
+        <Route
+          path="login/customer"
+          element={isAuthenticated ? <Navigate to="/" /> : <CustomerLogin />}
+        />
+        <Route
+          path="login/merchant"
+          element={isAuthenticated ? <Navigate to="/" /> : <MerchantLogin />}
+        />
+        <Route
+          path="login/admin"
+          element={isAuthenticated ? <Navigate to="/" /> : <AdminLogin />}
+        />
         <Route path="register" element={<Register />} />
+        <Route path="register/customer" element={<CustomerRegister />} />
+        <Route path="register/merchant" element={<MerchantRegister />} />
+        <Route path="register/admin" element={<AdminRegister />} />
+
+        {isAuthenticated && role === "ROLE_MERCHANT" && (
+          <Route path="merchant" element={<Merchant />}>
+            <Route index element={<MerchantDashboard />} />
+            <Route path="dashboard" element={<MerchantDashboard />} />
+            <Route path="products" element={<MerchantProducts />} />
+            <Route path="products/add" element={<AddProduct />} />
+            <Route path="accounts" element={<MerchantAccounts />} />
+          </Route>
+        )}
+
+        {isAuthenticated && role === "ROLE_ADMIN" && (
+          <Route path="admin" element={<Admin />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="merchants" element={<Merchants />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="analytics" element={<Analytics />} />
+          </Route>
+        )}
+        {isAuthenticated && role === "ROLE_ADMIN" && (
+          <Route path="admin/account" element={<AdminAccount />} />
+        )}
 
         <Route path="/" element={<Landing />} />
         <Route path="product/:id" element={<Product />} />
@@ -70,14 +106,6 @@ function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="search" element={<Search />} />
         <Route path="account" element={<Account />} />
-        {/* <Route
-            path='about-us'
-            element={<AboutUs />}
-          />
-          <Route
-            path='contact-us'
-            element={<ContactUs />}
-          /> */}
       </Routes>
     </div>
   );

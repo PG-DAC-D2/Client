@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./register.css";
+import "../auth/register.css";
 import axios from "../../shared/api/axios";
 
-function Register() {
+function CustomerRegister() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     firstname: "",
@@ -14,7 +14,6 @@ function Register() {
     phone: "",
     address: "",
     dob: "",
-    role: "ROLE_CUSTOMER",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,20 +33,12 @@ function Register() {
 
     setLoading(true);
     try {
-      let endpoint = "";
-      if (form.role === "ROLE_CUSTOMER") {
-        endpoint = "/customers/register";
-      } else if (form.role === "ROLE_MERCHANT") {
-        endpoint = "/merchants/register";
-      } else if (form.role === "ROLE_ADMIN") {
-        endpoint = "/admins/register";
-      }
-
       const { confirmPassword, ...dataToSend } = form;
       dataToSend.status = "ACTIVE";
+      dataToSend.role = "ROLE_CUSTOMER";
 
-      await axios.post(endpoint, dataToSend);
-      navigate("/login");
+      await axios.post("/customers/register", dataToSend);
+      navigate("/login/customer");
     } catch (err) {
       setError("Registration failed. Please try again.");
     } finally {
@@ -58,8 +49,8 @@ function Register() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Create Account</h2>
-        <p className="auth-subtitle">Join us and start shopping</p>
+        <h2>Create Customer Account</h2>
+        <p className="auth-subtitle">Join us as a Customer</p>
 
         {error && <p className="error-message">{error}</p>}
 
@@ -135,20 +126,6 @@ function Register() {
             />
           </div>
 
-          {/* <div className="auth-input-group">
-            <label>Role</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              required
-            >
-              <option value="ROLE_CUSTOMER">Customer</option>
-              <option value="ROLE_MERCHANT">Merchant</option>
-              <option value="ROLE_ADMIN">Admin</option>
-            </select>
-          </div> */}
-
           <div className="auth-input-group">
             <label>Password</label>
             <input
@@ -178,7 +155,7 @@ function Register() {
           </button>
 
           <p className="auth-footer">
-            Already have an account? <Link to="/login">Login</Link>
+            Already have an account? <Link to="/login/customer">Login</Link>
           </p>
         </form>
       </div>
@@ -186,4 +163,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default CustomerRegister;

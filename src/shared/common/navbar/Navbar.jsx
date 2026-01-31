@@ -1,45 +1,95 @@
 import React from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../../app/slices/authSlice";
 
 function Navbar() {
-    return (
-        <div>
-            <header className="header">
-                <div className="d-flex">
-                    {/* Logo */}
-                    <Link to="/">
-                        <div className="logo me-5 d-center">Vanilo</div>
-                    </Link>
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-                    {/* Address */}
-                    <div className="address">
-                        <p className="address-line1">Deliver to</p>
-                        <p className="address-line2">Pune, Maharashtra</p>
-                    </div>
-                </div>
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
-                {/* Search Bar */}
-                <div className="search-bar">
-                    <input type="text" placeholder="Search for products..." />
-                    <span className="material-icons search-icon">search</span>
-                </div>
+  return (
+    <div>
+      <header className="header">
+        <div className="d-flex">
+          {/* Logo */}
+          <Link to="/">
+            <div className="logo me-5 d-center">Vanilo</div>
+          </Link>
 
-                {/* Icons */}
-                <div className="icons">
-                    <Link to="/wishlist">
-                        <span className="material-icons icon" title="Wishlist">favorite_border</span>
-                    </Link>
-                    <Link to="/cart">
-                        <span className="material-icons icon" title="Cart">shopping_cart</span>
-                    </Link>
-                                        <Link to="/account">
-                        <span className="material-icons icon" title="Account">account_circle</span>
-                    </Link>
-                </div>
-            </header>
+          {/* Address */}
+          <div className="address">
+            <p className="address-line1">Deliver to</p>
+            <p className="address-line2">Pune, Maharashtra</p>
+          </div>
         </div>
-    );
+
+        {/* Search Bar */}
+        <div className="search-bar">
+          <input type="text" placeholder="Search for products..." />
+          <span className="material-icons search-icon">search</span>
+        </div>
+
+        {/* Icons */}
+        <div className="icons">
+          <Link to="/wishlist">
+            <span className="material-icons icon" title="Wishlist">
+              favorite_border
+            </span>
+          </Link>
+          <Link to="/cart">
+            <span className="material-icons icon" title="Cart">
+              shopping_cart
+            </span>
+          </Link>
+          {isAuthenticated ? (
+            <>
+              {role === "ROLE_MERCHANT" && (
+                <Link to="/merchant">
+                  <span
+                    className="material-icons icon"
+                    title="Merchant Dashboard"
+                  >
+                    store
+                  </span>
+                </Link>
+              )}
+              {role === "ROLE_ADMIN" && (
+                <Link to="/admin">
+                  <span className="material-icons icon" title="Admin Dashboard">
+                    admin_panel_settings
+                  </span>
+                </Link>
+              )}
+              <Link to="/account">
+                <span className="material-icons icon" title="Account">
+                  account_circle
+                </span>
+              </Link>
+              <span
+                className="material-icons icon"
+                title="Logout"
+                onClick={handleLogout}
+                style={{ cursor: "pointer" }}
+              >
+                logout
+              </span>
+            </>
+          ) : (
+            <Link to="/login">
+              <span className="material-icons icon" title="Login">
+                login
+              </span>
+            </Link>
+          )}
+        </div>
+      </header>
+    </div>
+  );
 }
 
 export default Navbar;
