@@ -71,6 +71,20 @@ function Navbar() {
               shopping_cart
             </span>
           </Link>
+          {isAuthenticated && (
+            <Link to="/notifications">
+              <span className="material-icons icon" title="Notifications">
+                notifications
+              </span>
+            </Link>
+          )}
+          {isAuthenticated && (
+            <Link to="/payment">
+              <span className="material-icons icon" title="Payment">
+                payment
+              </span>
+            </Link>
+          )}
           {isAuthenticated ? (
             <>
               {role === "ROLE_MERCHANT" && (
