@@ -37,10 +37,13 @@ function MerchantRegister() {
       dataToSend.status = "ACTIVE";
       dataToSend.role = "ROLE_MERCHANT";
 
-      await axios.post("/merchants/register", dataToSend);
+      console.log("Registering merchant with data:", dataToSend);
+      await axios.post("/api/merchants/register", dataToSend);
       navigate("/login/merchant");
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      console.error("Merchant registration error:", err.response?.data || err.message);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

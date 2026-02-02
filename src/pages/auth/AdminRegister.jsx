@@ -37,10 +37,12 @@ function AdminRegister() {
       dataToSend.status = "ACTIVE";
       dataToSend.role = "ROLE_ADMIN";
 
-      await axios.post("/admins/register", dataToSend);
+      await axios.post("/api/admin/register", dataToSend);
       navigate("/login/admin");
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      console.error("Admin registration error:", err.response?.data || err.message);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

@@ -1,20 +1,23 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../shared/api/axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../../shared/api/axios";
 
 // Fetch all products
-export const fetchProducts = createAsyncThunk('products/fetch', async () => {
-  const res = await api.get('/products');
+export const fetchProducts = createAsyncThunk("products/fetch", async () => {
+  const res = await api.get("/api/products");
   return res.data;
 });
 
 // Fetch single product by ID
-export const fetchProductById = createAsyncThunk('products/fetchById', async (id) => {
-  const res = await api.get(`/products/${id}`);
-  return res.data;
-});
+export const fetchProductById = createAsyncThunk(
+  "products/fetchById",
+  async (id) => {
+    const res = await api.get(`/api/products/${id}`);
+    return res.data;
+  },
+);
 
 const productSlice = createSlice({
-  name: 'products',
+  name: "products",
   initialState: {
     items: [],
     product: null,
@@ -53,5 +56,3 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
-
-

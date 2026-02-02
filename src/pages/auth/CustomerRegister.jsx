@@ -37,10 +37,13 @@ function CustomerRegister() {
       dataToSend.status = "ACTIVE";
       dataToSend.role = "ROLE_CUSTOMER";
 
-      await axios.post("/customers/register", dataToSend);
+      console.log("Registering customer with data:", dataToSend);
+      await axios.post("/api/customers/register", dataToSend);
       navigate("/login/customer");
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      console.error("Customer registration error:", err.response?.data || err.message);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

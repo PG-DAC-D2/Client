@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./AdminAccount.css";
-import PersonalInfo from "../../../account/components/PersonalInfo";
+import AdminPersonalInfo from "./AdminPersonalInfo";
 import Address from "../../../account/components/Address";
 import AdminNavbar from "../common/AdminNavbar";
 import AdminAccountSidebar from "./AdminAccountSidebar";
@@ -14,7 +14,7 @@ function AdminAccount() {
       case "address":
         return <Address />;
       default:
-        return <PersonalInfo />;
+        return <AdminPersonalInfo />;
     }
   };
 

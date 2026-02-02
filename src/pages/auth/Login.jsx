@@ -13,6 +13,7 @@ function Login() {
     password: "",
     userRole: "ROLE_CUSTOMER",
   });
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,32 +22,27 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let endpoint = "";
-      if (form.userRole === "ROLE_CUSTOMER") {
-        endpoint = "/customers/login";
-      } else if (form.userRole === "ROLE_MERCHANT") {
-        endpoint = "/merchants/login";
-      } else if (form.userRole === "ROLE_ADMIN") {
-        endpoint = "/admins/login";
-      }
-
-      const response = await axios.post(endpoint, {
+      const response = await axios.post("/api/users/signin", {
         email: form.email,
         password: form.password,
+        userRole: form.userRole,
       });
       console.log("Login successful:", response.data);
-      // Assuming response.data has { user, token, role }
+      // Assuming response.data has { message, token, role, id }
       dispatch(
         login({
-          user: response.data.user,
+          user: { id: response.data.id, email: form.email },
           token: response.data.token,
-          role: form.userRole,
+          role: response.data.role,
         }),
       );
       navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
-      // Handle error, e.g., show message
+      console.error("Login failed:", error.response || error.message || error);
+      const status = error.response?.status;
+      const body = error.response?.data;
+      const msg = body?.message || body?.error || error.message || "Login failed";
+      setErrorMsg(`(${status || "?"}) ${msg}`);
     }
   };
 
@@ -57,6 +53,7 @@ function Login() {
         <p className="auth-subtitle">Login to continue shopping</p>
 
         <form onSubmit={handleSubmit}>
+          {errorMsg && <p className="error-message">{errorMsg}</p>}
           <div className="auth-input-group">
             <label>Email</label>
             <input

@@ -1,30 +1,58 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../../shared/common/navbar/Navbar";
 import "./cart.css";
 import OrderSummary from "./OrderSummary";
 import PromoCode from "./PromoCode";
-import { decreaseQty, increaseQty, removeItem, clearCart } from "../../app/slices/cartSlice";
+import {
+  fetchCart,
+  updateCartItem,
+  removeCartItem,
+  clearCartAPI,
+} from "../../app/slices/cartSlice";
 
 function Cart() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
 
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
+
   const handleDecrease = (id) => {
-    dispatch(decreaseQty(id));
+    const item = cartItems.find((item) => item.id === id);
+    if (item && item.quantity > 1) {
+      dispatch(
+        updateCartItem({
+          cartItemId: item.cartItemId,
+          quantity: item.quantity - 1,
+        }),
+      );
+    }
   };
 
   const handleIncrease = (id) => {
-    dispatch(increaseQty(id));
+    const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      dispatch(
+        updateCartItem({
+          cartItemId: item.cartItemId,
+          quantity: item.quantity + 1,
+        }),
+      );
+    }
   };
 
   const handleRemove = (id) => {
-    dispatch(removeItem(id));
+    const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      dispatch(removeCartItem(item.cartItemId));
+    }
   };
 
   const handleClearCart = () => {
     if (window.confirm("Are you sure you want to clear your cart?")) {
-      dispatch(clearCart());
+      dispatch(clearCartAPI());
     }
   };
 
@@ -56,7 +84,8 @@ function Cart() {
                 <div>
                   <span className="cart-products-title">Product</span>
                   <span className="cart-products-meta">
-                    There are {cartItems.length} product{cartItems.length !== 1 ? 's' : ''} in your cart
+                    There are {cartItems.length} product
+                    {cartItems.length !== 1 ? "s" : ""} in your cart
                   </span>
                 </div>
                 {cartItems.length > 0 && (
@@ -64,14 +93,14 @@ function Cart() {
                     onClick={handleClearCart}
                     className="cart-clear-btn"
                     style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#f59e0b',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      padding: '0',
-                      textDecoration: 'none',
+                      background: "none",
+                      border: "none",
+                      color: "#f59e0b",
+                      cursor: "pointer",
+                      fontSize: "13px",
+                      fontWeight: "500",
+                      padding: "0",
+                      textDecoration: "none",
                     }}
                   >
                     Clear cart
@@ -80,13 +109,19 @@ function Cart() {
               </div>
 
               {cartItems.length === 0 ? (
-                <div style={{ 
-                  textAlign: 'center', 
-                  padding: '60px 20px',
-                  color: '#6b7280'
-                }}>
-                  <p style={{ fontSize: '16px', margin: '0 0 8px' }}>Your cart is empty</p>
-                  <p style={{ fontSize: '14px' }}>Add some products to get started!</p>
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "60px 20px",
+                    color: "#6b7280",
+                  }}
+                >
+                  <p style={{ fontSize: "16px", margin: "0 0 8px" }}>
+                    Your cart is empty
+                  </p>
+                  <p style={{ fontSize: "14px" }}>
+                    Add some products to get started!
+                  </p>
                 </div>
               ) : (
                 <div className="cart-items">
@@ -103,7 +138,8 @@ function Cart() {
                         <div className="cart-item-info">
                           <h4 className="cart-item-name">{item.name}</h4>
                           <p className="cart-item-meta">
-                            Size: {item.size || '-'} &nbsp;•&nbsp; Color: {item.color || item.category || '-'}
+                            Size: {item.size || "-"} &nbsp;•&nbsp; Color:{" "}
+                            {item.color || item.category || "-"}
                           </p>
                         </div>
                       </div>
@@ -117,7 +153,9 @@ function Cart() {
                           >
                             −
                           </button>
-                          <span className="cart-qty-value">{item.qty}</span>
+                          <span className="cart-qty-value">
+                            {item.quantity}
+                          </span>
                           <button
                             className="cart-qty-btn"
                             onClick={() => handleIncrease(item.id)}
@@ -130,7 +168,10 @@ function Cart() {
                           onClick={() => handleRemove(item.id)}
                           aria-label="Remove item"
                         >
-                          <span className="material-icons" style={{ fontSize: '20px' }}>
+                          <span
+                            className="material-icons"
+                            style={{ fontSize: "20px" }}
+                          >
                             delete_outline
                           </span>
                         </button>

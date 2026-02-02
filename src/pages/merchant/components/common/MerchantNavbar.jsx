@@ -21,7 +21,7 @@ function MerchantNavbar() {
 
                 {/* Icons */}
                 <div className="icons">
-                    <Link to="/admin/account">
+                    <Link to="/merchant/accounts">
                         <span className="material-icons icon" title="Account">account_circle</span>
                     </Link>
                 </div>

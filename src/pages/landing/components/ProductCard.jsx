@@ -1,9 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addItem } from "../../../app/slices/cartSlice";
+import { addItemToCart } from "../../../app/slices/cartSlice";
 
-function ProductCard({ _id, imageUrl, name, tags, rating, review, sizes, rate, onAddToCart }) {
+function ProductCard({
+  _id,
+  imageUrl,
+  name,
+  tags,
+  rating,
+  review,
+  sizes,
+  rate,
+  onAddToCart,
+}) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -15,16 +25,15 @@ function ProductCard({ _id, imageUrl, name, tags, rating, review, sizes, rate, o
   // stop click event from bubbling when Add to cart is clicked
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    dispatch(addItem({
-      id: _id,
-      name: name,
-      price: rate,
-      image: imageUrl?.[0] || imageUrl,
-      size: sizes?.[0] || 'M',
-      color: tags?.[0] || '',
-      category: tags?.[0] || '',
-    }));
-    navigate('/cart');
+    dispatch(
+      addItemToCart({
+        ProductId: _id,
+        ProductName: name,
+        UnitPrice: rate,
+        Quantity: 1,
+      }),
+    );
+    navigate("/cart");
   };
 
   return (

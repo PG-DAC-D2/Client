@@ -6,32 +6,9 @@ function PersonalInfo() {
 
       {/* Title */}
       <h4 className="fw-bold mb-4">Personal Information</h4>
+ 
 
-      {/* PROFILE IMAGE */}
-      <div className="d-flex align-items-center mb-4">
-        <img
-          src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=500&q=80"
-          alt="User"
-          style={{
-            width: "85px",
-            height: "85px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            marginRight: "18px",
-          }}
-        />
-
-        <div>
-          <p className="mb-1 fw-semibold" style={{ fontSize: "15px" }}>John Doe</p>
-          <button
-            className="btn btn-outline-dark btn-sm"
-            style={{ borderRadius: "6px" }}
-          >
-            Change Photo
-          </button>
-        </div>
-      </div>
+     
 
       {/* FORM FIELDS */}
       <div className="row">
@@ -46,6 +23,26 @@ function PersonalInfo() {
         <div className="col-md-6 mb-3">
           <label className="form-label">Email</label>
           <input className="form-control" placeholder="Enter your email" />
+        </div>
+
+        {/* Date of Birth */}
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Date of Birth</label>
+          <input
+            type="date"
+            className="form-control"
+            placeholder="Enter date of birth"
+          />
+        </div>
+
+        {/* Store Name */}
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Store Name</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter store name"
+          />
         </div>
 
         {/* Phone */}

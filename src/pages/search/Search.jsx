@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addItem } from "../../app/slices/cartSlice";
+import { addItemToCart } from "../../app/slices/cartSlice";
 import "./Search.css";
 import Navbar from "../../shared/common/navbar/Navbar";
 
@@ -12,7 +12,8 @@ function Search() {
 
   // Get search query from URL params or location state
   const searchParams = new URLSearchParams(location.search);
-  const initialQuery = location.state?.searchQuery || searchParams.get('q') || '';
+  const initialQuery =
+    location.state?.searchQuery || searchParams.get("q") || "";
 
   // Dummy products data - at least 9 products
   const allProducts = [
@@ -24,7 +25,8 @@ function Search() {
       category: "Jackets",
       gender: "Unisex",
       sizes: ["S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 2,
@@ -34,7 +36,8 @@ function Search() {
       category: "Hoodies",
       gender: "Men",
       sizes: ["M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 3,
@@ -44,27 +47,32 @@ function Search() {
       category: "Shirts",
       gender: "Men",
       sizes: ["S", "M", "L"],
-      image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3a30?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1602810318383-e386cc2a3a30?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 4,
       name: "Black Sea Polo",
-      description: "Minimal matte polo tee designed for understated confidence.",
+      description:
+        "Minimal matte polo tee designed for understated confidence.",
       price: 390,
       category: "T-Shirts",
       gender: "Men",
       sizes: ["S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 5,
       name: "Osaka Grid Layer",
-      description: "Textured navy jacket with a geometric stitch detail smart & sleek.",
+      description:
+        "Textured navy jacket with a geometric stitch detail smart & sleek.",
       price: 280,
       category: "Jackets",
       gender: "Unisex",
       sizes: ["S", "M", "L", "XL", "XXL"],
-      image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 6,
@@ -74,7 +82,8 @@ function Search() {
       category: "T-Shirts",
       gender: "Men",
       sizes: ["S", "M", "L"],
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 7,
@@ -84,57 +93,68 @@ function Search() {
       category: "Hoodies",
       gender: "Unisex",
       sizes: ["M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 8,
       name: "Charcoal Flex Sweatshirt",
-      description: "Effortless fit meets stretch comfort in this cool-season staple.",
+      description:
+        "Effortless fit meets stretch comfort in this cool-season staple.",
       price: 300,
       category: "Sweatshirts",
       gender: "Men",
       sizes: ["S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1571821324176-52ff15e96348?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1571821324176-52ff15e96348?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 9,
       name: "Desert Tone Chinos",
-      description: "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
+      description:
+        "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
       price: 450,
       category: "Pants",
       gender: "Men",
       sizes: ["30", "32", "34", "36"],
-      image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 10,
       name: "Ivory Bloom Shirt",
-      description: "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
+      description:
+        "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
       price: 380,
       category: "Shirts",
       gender: "Women",
       sizes: ["XS", "S", "M", "L"],
-      image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3a30?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1602810318383-e386cc2a3a30?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 11,
       name: "Zen Cream Tee",
-      description: "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
+      description:
+        "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
       price: 250,
       category: "T-Shirts",
       gender: "Women",
       sizes: ["XS", "S", "M"],
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     },
     {
       id: 12,
       name: "Sketch City Tee",
-      description: "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
+      description:
+        "Soft silk-linen blend polo with tailored stripes made for daily confidence.",
       price: 270,
       category: "T-Shirts",
       gender: "Unisex",
       sizes: ["S", "M", "L", "XL"],
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     },
   ];
 
@@ -144,7 +164,7 @@ function Search() {
   const [selectedGender, setSelectedGender] = useState("All");
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  
+
   // Collapsible filter states
   const [expandedFilters, setExpandedFilters] = useState({
     categories: true,
@@ -161,23 +181,39 @@ function Search() {
   // Filter products
   const filteredProducts = useMemo(() => {
     return allProducts.filter((product) => {
-      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesGender = selectedGender === "All" || product.gender === selectedGender;
+      const matchesCategory =
+        selectedCategory === "All" || product.category === selectedCategory;
+      const matchesPrice =
+        product.price >= priceRange[0] && product.price <= priceRange[1];
+      const matchesGender =
+        selectedGender === "All" || product.gender === selectedGender;
       const matchesSize =
-        selectedSizes.length === 0 || product.sizes.some((size) => selectedSizes.includes(size));
+        selectedSizes.length === 0 ||
+        product.sizes.some((size) => selectedSizes.includes(size));
       const matchesSearch =
         searchQuery === "" ||
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesCategory && matchesPrice && matchesGender && matchesSize && matchesSearch;
+      return (
+        matchesCategory &&
+        matchesPrice &&
+        matchesGender &&
+        matchesSize &&
+        matchesSearch
+      );
     });
-  }, [selectedCategory, priceRange, selectedGender, selectedSizes, searchQuery]);
+  }, [
+    selectedCategory,
+    priceRange,
+    selectedGender,
+    selectedSizes,
+    searchQuery,
+  ]);
 
   const handleSizeToggle = (size) => {
     setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size],
     );
   };
 
@@ -190,14 +226,12 @@ function Search() {
 
   const handleAddToCart = (product) => {
     dispatch(
-      addItem({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        size: product.sizes[0],
-        category: product.category,
-      })
+      addItemToCart({
+        ProductId: product.id,
+        ProductName: product.name,
+        UnitPrice: product.price,
+        Quantity: 1,
+      }),
     );
     navigate("/cart");
   };
@@ -220,9 +254,14 @@ function Search() {
             {/* Left Sidebar - Filters */}
             <aside className="search-filters">
               <div className="filter-section">
-                <div className="filter-header" onClick={() => toggleFilter('categories')}>
+                <div
+                  className="filter-header"
+                  onClick={() => toggleFilter("categories")}
+                >
                   <h3>Categories</h3>
-                  <span className={`material-icons ${expandedFilters.categories ? 'expanded' : ''}`}>
+                  <span
+                    className={`material-icons ${expandedFilters.categories ? "expanded" : ""}`}
+                  >
                     expand_more
                   </span>
                 </div>
@@ -244,9 +283,14 @@ function Search() {
               </div>
 
               <div className="filter-section">
-                <div className="filter-header" onClick={() => toggleFilter('price')}>
+                <div
+                  className="filter-header"
+                  onClick={() => toggleFilter("price")}
+                >
                   <h3>Product Price</h3>
-                  <span className={`material-icons ${expandedFilters.price ? 'expanded' : ''}`}>
+                  <span
+                    className={`material-icons ${expandedFilters.price ? "expanded" : ""}`}
+                  >
                     expand_more
                   </span>
                 </div>
@@ -297,7 +341,12 @@ function Search() {
                             min="0"
                             max="1000"
                             value={priceRange[0]}
-                            onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                            onChange={(e) =>
+                              setPriceRange([
+                                Number(e.target.value),
+                                priceRange[1],
+                              ])
+                            }
                             className="price-slider"
                           />
                           <input
@@ -305,14 +354,21 @@ function Search() {
                             min="0"
                             max="1000"
                             value={priceRange[1]}
-                            onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                            onChange={(e) =>
+                              setPriceRange([
+                                priceRange[0],
+                                Number(e.target.value),
+                              ])
+                            }
                             className="price-slider"
                           />
                         </div>
                         <div className="price-display">
                           <span className="price-value">${priceRange[0]}</span>
                           <span className="price-separator">-</span>
-                          <span className="price-value price-value-highlight">${priceRange[1]}</span>
+                          <span className="price-value price-value-highlight">
+                            ${priceRange[1]}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -321,9 +377,14 @@ function Search() {
               </div>
 
               <div className="filter-section">
-                <div className="filter-header" onClick={() => toggleFilter('gender')}>
+                <div
+                  className="filter-header"
+                  onClick={() => toggleFilter("gender")}
+                >
                   <h3>Gender</h3>
-                  <span className={`material-icons ${expandedFilters.gender ? 'expanded' : ''}`}>
+                  <span
+                    className={`material-icons ${expandedFilters.gender ? "expanded" : ""}`}
+                  >
                     expand_more
                   </span>
                 </div>
@@ -345,9 +406,14 @@ function Search() {
               </div>
 
               <div className="filter-section">
-                <div className="filter-header" onClick={() => toggleFilter('size')}>
+                <div
+                  className="filter-header"
+                  onClick={() => toggleFilter("size")}
+                >
                   <h3>Size & Fit</h3>
-                  <span className={`material-icons ${expandedFilters.size ? 'expanded' : ''}`}>
+                  <span
+                    className={`material-icons ${expandedFilters.size ? "expanded" : ""}`}
+                  >
                     expand_more
                   </span>
                 </div>
@@ -377,11 +443,15 @@ function Search() {
                 <div className="breadcrumb">
                   <span>Categories</span>
                   <span className="material-icons">chevron_right</span>
-                  <span>{selectedCategory === "All" ? "All" : selectedCategory}</span>
+                  <span>
+                    {selectedCategory === "All" ? "All" : selectedCategory}
+                  </span>
                   <span className="material-icons">chevron_right</span>
                   <span>All Price</span>
                 </div>
-                <p className="results-count">Showing all {filteredProducts.length} items results</p>
+                <p className="results-count">
+                  Showing all {filteredProducts.length} items results
+                </p>
               </div>
 
               <div className="product-grid">
@@ -403,7 +473,9 @@ function Search() {
                             }}
                             title="Add to wishlist"
                           >
-                            <span className="material-icons">favorite_border</span>
+                            <span className="material-icons">
+                              favorite_border
+                            </span>
                           </button>
                           <button
                             className="product-action-btn"
@@ -419,8 +491,12 @@ function Search() {
                       </div>
                       <div className="product-grid-info">
                         <h4 className="product-grid-name">{product.name}</h4>
-                        <p className="product-grid-description">{product.description}</p>
-                        <p className="product-grid-price">${product.price.toFixed(2)}</p>
+                        <p className="product-grid-description">
+                          {product.description}
+                        </p>
+                        <p className="product-grid-price">
+                          ${product.price.toFixed(2)}
+                        </p>
                       </div>
                     </div>
                   ))

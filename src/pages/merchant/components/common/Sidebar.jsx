@@ -1,20 +1,28 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { FiHome, FiBox, FiClipboard, FiBarChart2, FiDollarSign, FiSettings, FiLogOut } from "react-icons/fi";
+import {
+  FiHome,
+  FiBox,
+  FiClipboard,
+  FiBarChart2,
+  FiDollarSign,
+  FiSettings,
+  FiLogOut,
+} from "react-icons/fi";
 import "../../Merchant.css";
 
 export default function Sidebar() {
   return (
     <aside className="merchant-sidebar-container">
-
       {/* Brand / Title */}
       <div className="merchant-sidebar-brand">
-        <h4 style={{ fontWeight: 700, marginBottom: "18px" }}>Merchant Panel</h4>
+        <h4 style={{ fontWeight: 700, marginBottom: "18px" }}>
+          Merchant Panel
+        </h4>
       </div>
 
       {/* Navigation */}
       <nav className="merchant-sidebar-nav">
-
         <NavLink
           to="/merchant/dashboard"
           className={({ isActive }) =>
@@ -24,7 +32,7 @@ export default function Sidebar() {
           <div className="nav-icon-label">
             <FiHome size={18} />
             <span>Dashboard</span>
-            </div>
+          </div>
         </NavLink>
 
         <NavLink
@@ -33,7 +41,6 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-
           <div className="nav-icon-label">
             <FiBox size={18} />
             <span>Products</span>
@@ -46,7 +53,6 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-
           <div className="nav-icon-label">
             <FiClipboard size={18} />
             <span>Orders</span>
@@ -71,7 +77,6 @@ export default function Sidebar() {
             isActive ? "merchant-nav-item active" : "merchant-nav-item"
           }
         >
-
           <div className="nav-icon-label">
             <FiDollarSign size={18} />
             <span>Payouts</span>
@@ -90,13 +95,15 @@ export default function Sidebar() {
             <span>Settings</span>
           </div>
         </NavLink> */}
-
       </nav>
 
       {/* Logout */}
       <div className="merchant-sidebar-footer">
         <button
-          onClick={() => (window.location.href = "/login")}
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/auth";
+          }}
           className="btn-ghost"
           style={{
             background: "none",
@@ -115,7 +122,6 @@ export default function Sidebar() {
           Logout
         </button>
       </div>
-
     </aside>
   );
 }

@@ -36,11 +36,11 @@ function Register() {
     try {
       let endpoint = "";
       if (form.role === "ROLE_CUSTOMER") {
-        endpoint = "/customers/register";
+        endpoint = "/api/customers/register";
       } else if (form.role === "ROLE_MERCHANT") {
-        endpoint = "/merchants/register";
+        endpoint = "/api/merchants/register";
       } else if (form.role === "ROLE_ADMIN") {
-        endpoint = "/admins/register";
+        endpoint = "/api/admins/register";
       }
 
       const { confirmPassword, ...dataToSend } = form;

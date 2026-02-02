@@ -105,7 +105,7 @@ function Navbar() {
               </span>
             </>
           ) : (
-            <Link to="/login">
+            <Link to="/auth">
               <span className="material-icons icon" title="Login">
                 login
               </span>

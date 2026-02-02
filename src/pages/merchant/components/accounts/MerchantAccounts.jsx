@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./MerchantAccounts.css";
-import PersonalInfo from "../../../account/components/PersonalInfo";
+import MerchantPersonalInfo from "./MerchantPersonalInfo";
 import Address from "../../../account/components/Address";
 import MerchantAccountSidebar from "./MerchantAccountsSidebar";
 import MerchantNavbar from "../common/MerchantNavbar";
@@ -14,16 +14,16 @@ function MerchantAccounts() {
       case "address":
         return <Address />;
       default:
-        return <PersonalInfo />;
+        return <MerchantPersonalInfo />;
     }
   };
 
   return (
     <>
-      <MerchantNavbar />
+      {/* <MerchantNavbar /> */}
 
       {/* TOP SPACING (prevents navbar overlap) */}
-      <div style={{ height: "90px" }} />
+      <div style={{ height: "10px" }} />
 
       {/* PAGE BACKGROUND (Shopy Style) */}
       <div className="account-page-bg">

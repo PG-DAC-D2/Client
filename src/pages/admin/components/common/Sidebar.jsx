@@ -16,9 +16,7 @@ export default function Sidebar() {
     <aside className="merchant-sidebar-container">
       {/* Brand / Title */}
       <div className="merchant-sidebar-brand">
-        <h4 style={{ fontWeight: 700, marginBottom: "18px" }}>
-          Admin Panel
-        </h4>
+        <h4 style={{ fontWeight: 700, marginBottom: "18px" }}>Admin Panel</h4>
       </div>
 
       {/* Navigation */}
@@ -87,7 +85,10 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="merchant-sidebar-footer">
         <button
-          onClick={() => (window.location.href = "/login")}
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/auth";
+          }}
           className="btn-ghost"
           style={{
             background: "none",

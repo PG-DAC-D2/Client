@@ -1,8 +1,34 @@
-import React, { useState } from "react";
-import { FiBox, FiHeart, FiUser, FiHome, FiLogOut, FiChevronRight } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axios from "../../../shared/api/axios";
+import {
+  FiBox,
+  FiHeart,
+  FiUser,
+  FiHome,
+  FiLogOut,
+  FiChevronRight,
+} from "react-icons/fi";
 
 function AccountSidebar({ activeTab, setActiveTab }) {
+  const { user } = useSelector((state) => state.auth);
+  const [customerData, setCustomerData] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchCustomerData();
+    }
+  }, [user?.id]);
+
+  const fetchCustomerData = async () => {
+    try {
+      const response = await axios.get(`/api/customers/${user.id}`);
+      setCustomerData(response.data);
+    } catch (err) {
+      console.error("Failed to fetch customer data:", err);
+    }
+  };
 
   const menuItems = [
     { key: "orders", label: "Orders", icon: <FiBox /> },
@@ -13,13 +39,11 @@ function AccountSidebar({ activeTab, setActiveTab }) {
 
   return (
     <div className="sidebar-card">
-
       {/* USER TITLE */}
-      <h6 className="sidebar-title">Welcome, John Doe</h6>
+      <h6 className="sidebar-title">Welcome, {customerData?.firstname || ""} {customerData?.lastname || ""}</h6>
 
       {/* SIDEBAR LIST */}
       <ul className="sidebar-list">
-
         {menuItems.map((item) => (
           <li
             key={item.key}
@@ -49,7 +73,15 @@ function AccountSidebar({ activeTab, setActiveTab }) {
         {showLogoutConfirm && (
           <div className="logout-dropdown">
             <p className="mb-2">Are you sure you want to sign out?</p>
-            <button className="btn btn-danger btn-sm me-2">Yes</button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.href = "/auth";
+              }}
+              className="btn btn-danger btn-sm me-2"
+            >
+              Yes
+            </button>
             <button
               className="btn btn-secondary btn-sm"
               onClick={() => setShowLogoutConfirm(false)}
@@ -58,7 +90,6 @@ function AccountSidebar({ activeTab, setActiveTab }) {
             </button>
           </div>
         )}
-
       </ul>
     </div>
   );

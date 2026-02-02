@@ -20,7 +20,7 @@
 import React, { useState } from "react";
 import Navbar from "../../shared/common/navbar/Navbar";
 import AccountSidebar from "./components/AccountSidebar";
-import PersonalInfo from "./components/PersonalInfo";
+import CustomerPersonalInfo from "./components/CustomerPersonalInfo";
 import Address from "./components/Address";
 import Orders from "./components/Orders";
 import Wishlist from "./components/Wishlist";
@@ -33,7 +33,7 @@ function Account() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "personal":
-        return <PersonalInfo />;
+        return <CustomerPersonalInfo />;
       case "address":
         return <Address />;
       case "wishlist":

@@ -2,8 +2,8 @@ import React from "react";
 
 function OrderSummary({ cartItems = [] }) {
   const subTotal = cartItems.reduce(
-    (sum, item) => sum + (item.price || 0) * (item.qty || 1),
-    0
+    (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
+    0,
   );
 
   const discount = 60; // static for now
@@ -43,5 +43,3 @@ function OrderSummary({ cartItems = [] }) {
 }
 
 export default OrderSummary;
-
-

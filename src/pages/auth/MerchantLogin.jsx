@@ -8,7 +8,11 @@ import { login } from "../../app/slices/authSlice";
 function MerchantLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [form, setForm] = useState({ email: "", password: "", userRole: "ROLE_MERCHANT" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    userRole: "ROLE_MERCHANT",
+  });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,18 +21,38 @@ function MerchantLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/users/signin", form);
-      console.log("Login successful:", response.data);
+      const response = await axios.post("/api/users/signin", form);
+      console.log("Login response:", response.data);
+
+      const { token, role, id } = response.data;
+
+      // Verify the response has the required fields
+      if (!token || !id) {
+        console.error("Invalid response structure:", response.data);
+        alert("Login failed: Invalid server response");
+        return;
+      }
+
       dispatch(
         login({
-          user: response.data.id,
-          token: response.data.token,
-          role: "ROLE_MERCHANT",
+          user: { id, email: form.email },
+          token,
+          role: role || "ROLE_MERCHANT",
         }),
       );
-      navigate("/");
+
+      console.log("Auth state updated, navigating to merchant dashboard");
+      // Use a small timeout to ensure auth state is updated
+      setTimeout(() => {
+        navigate("/merchant/dashboard");
+      }, 100);
     } catch (error) {
       console.error("Login failed:", error);
+      if (error.response?.status === 401) {
+        alert("Invalid email/password or role mismatch");
+      } else {
+        alert("Login failed. Please try again.");
+      }
     }
   };
 
