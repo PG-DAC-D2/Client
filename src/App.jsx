@@ -28,7 +28,10 @@ import Merchant from "./pages/merchant/Merchant";
 import MerchantDashboard from "./pages/merchant/components/merchant/MerchantDashboard";
 import MerchantProducts from "./pages/merchant/components/merchant/MerchantProducts";
 import AddProduct from "./pages/merchant/components/merchant/AddProduct";
+import EditProduct from "./pages/merchant/components/merchant/EditProduct";
+import MerchantOrders from "./pages/merchant/components/merchant/MerchantOrders";
 import MerchantAccounts from "./pages/merchant/components/accounts/MerchantAccounts";
+import MerchantAnalytics from "./pages/merchant/components/merchant/MerchantAnalytics";
 
 import Admin from "./pages/admin/Admin";
 import AdminDashboard from "./pages/admin/components/admin/AdminDashboard";
@@ -85,6 +88,9 @@ function App() {
             <Route path="dashboard" element={<MerchantDashboard />} />
             <Route path="products" element={<MerchantProducts />} />
             <Route path="products/add" element={<AddProduct />} />
+            <Route path="products/edit/:productId" element={<EditProduct />} />
+            <Route path="orders" element={<MerchantOrders />} />
+            <Route path="analytics" element={<MerchantAnalytics />} />
             <Route path="accounts" element={<MerchantAccounts />} />
           </Route>
         )}

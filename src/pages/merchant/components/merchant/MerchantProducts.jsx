@@ -1,38 +1,70 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getProducts, deleteProduct } from "../../../../services/apiService";
 import "../../Merchant.css";
 
 function MerchantProducts() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(null);
 
-  // Updated products with dummy images
-  const products = [
-    {
-      id: "P-101",
-      name: "Blue T-Shirt",
-      sales: 120,
-      price: 599,
-      earning: 71900,
-      image: "https://images.unsplash.com/photo-1740711152088-88a009e877bb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880",
-    },
+  // Fetch products on component mount and when returning from add product page
+  useEffect(() => {
+    fetchProducts();
+  }, [location]);
 
-    {
-      id: "P-205",
-      name: "Sneakers",
-      sales: 95,
-      price: 2499,
-      earning: 237405,
-      image: "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=400&q=80",
-    },
-    {
-      id: "P-311",
-      name: "Denim Jeans",
-      sales: 80,
-      price: 1299,
-      earning: 103920,
-      image: "https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=400&q=80",
-    },
-  ];
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await getProducts();
+      
+      // Transform API response to match table format
+      const transformedProducts = response.map((product, index) => ({
+        _id: product._id,
+        id: product._id || `P-${index + 1}`,
+        name: product.name,
+        sales: product.review || 0,
+        price: product.rate || 0,
+        earning: (product.rate || 0) * (product.review || 0),
+        image: product.imageUrl?.[0] || "https://via.placeholder.com/100",
+      }));
+
+      setProducts(transformedProducts);
+      setError("");
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError("Failed to load products");
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle edit button click
+  const handleEdit = (productId) => {
+    navigate(`/merchant/products/edit/${productId}`);
+  };
+
+  // Handle delete button click
+  const handleDelete = async (productId, productName) => {
+    if (window.confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+      setDeleting(productId);
+      try {
+        await deleteProduct(productId);
+        // Remove product from state
+        setProducts(products.filter(p => p._id !== productId));
+        alert("Product deleted successfully");
+      } catch (err) {
+        console.error("Error deleting product:", err);
+        alert("Failed to delete product. Please try again.");
+      } finally {
+        setDeleting(null);
+      }
+    }
+  };
 
   return (
     <div className="merchant-products-page">
@@ -49,58 +81,82 @@ function MerchantProducts() {
         </button>
       </div>
 
+      {error && (
+        <div className="alert alert-warning" style={{ marginBottom: "20px" }}>
+          {error}
+        </div>
+      )}
+
       {/* Product Table */}
       <div className="merchant-card products-card">
 
-        <table className="table-modern">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Product</th>
-              <th>Sales</th>
-              <th>Price</th>
-              <th>Earnings</th>
-              <th className="text-end">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {products.map((item) => (
-              <tr key={item.id} className="table-row">
-
-                <td>{item.id}</td>
-
-                {/* NAME + IMAGE */}
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{
-                        width: "45px",
-                        height: "45px",
-                        borderRadius: "8px",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <span>{item.name}</span>
-                  </div>
-                </td>
-
-                <td>{item.sales}</td>
-                <td>₹{item.price}</td>
-                <td>₹{item.earning.toLocaleString()}</td>
-
-                {/* ACTION BUTTONS */}
-                <td className="text-end">
-                  <button className="table-action-btn edit-action">Edit</button>
-                  <button className="table-action-btn delete-action">Delete</button>
-                </td>
-
+        {loading ? (
+          <p style={{ textAlign: "center", padding: "20px" }}>Loading products...</p>
+        ) : products.length === 0 ? (
+          <p style={{ textAlign: "center", padding: "20px" }}>
+            No products yet. <span onClick={() => navigate("/merchant/products/add")} style={{ cursor: "pointer", color: "blue" }}>Add your first product</span>
+          </p>
+        ) : (
+          <table className="table-modern">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Sales</th>
+                <th>Price</th>
+                <th>Earnings</th>
+                <th className="text-end">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {products.map((item) => (
+                <tr key={item.id} className="table-row">
+
+                  {/* NAME + IMAGE */}
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: "45px",
+                          height: "45px",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <span>{item.name}</span>
+                    </div>
+                  </td>
+
+                  <td>{item.sales}</td>
+                  <td>₹{item.price}</td>
+                  <td>₹{item.earning.toLocaleString()}</td>
+
+                  {/* ACTION BUTTONS */}
+                  <td className="text-end">
+                    <button 
+                      className="table-action-btn edit-action"
+                      onClick={() => handleEdit(item._id)}
+                      title="Edit product"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="table-action-btn delete-action"
+                      onClick={() => handleDelete(item._id, item.name)}
+                      disabled={deleting === item._id}
+                      title="Delete product"
+                    >
+                      {deleting === item._id ? "Deleting..." : "Delete"}
+                    </button>
+                  </td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
       </div>
     </div>

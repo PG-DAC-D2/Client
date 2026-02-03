@@ -1,43 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { getProducts, getOrders } from "../../../../services/apiService";
-import "../../Admin.css";
+import "../../Merchant.css";
 
-export default function AdminDashboard() {
+export default function MerchantAnalytics() {
   const [topProducts, setTopProducts] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
-  const [stats, setStats] = useState([
-    { title: "Total Products", value: "0", loading: true },
-    { title: "Total Orders", value: "0", loading: true },
-    { title: "Total Sales", value: "₹ 0", loading: true },
-  ]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchAnalyticsData();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchAnalyticsData = async () => {
     try {
       setLoading(true);
       const [productsResponse, ordersResponse] = await Promise.all([
         getProducts(),
         getOrders(),
-      ]);
-
-      const totalProducts = productsResponse.length;
-      const totalSalesAmount = productsResponse.reduce((sum, product) => {
-        return sum + ((product.rate || 0) * (product.review || 0));
-      }, 0);
-
-      const totalOrders = ordersResponse.length > 0
-        ? ordersResponse.length
-        : productsResponse.reduce((sum, product) => sum + (product.review || 0), 0);
-
-      setStats([
-        { title: "Total Products", value: totalProducts.toString(), loading: false },
-        { title: "Total Orders", value: totalOrders.toLocaleString(), loading: false },
-        { title: "Total Sales", value: `₹ ${totalSalesAmount.toLocaleString()}`, loading: false },
       ]);
 
       const transformedProducts = productsResponse.map((product) => ({
@@ -53,8 +33,8 @@ export default function AdminDashboard() {
       setPieChartData(top5);
       setError("");
     } catch (err) {
-      console.error("Error fetching admin dashboard data:", err);
-      setError("Failed to load dashboard data");
+      console.error("Error fetching analytics data:", err);
+      setError("Failed to load analytics data");
       const defaultProducts = [
         { name: "Blue T-Shirt", sales: 120 },
         { name: "Casual Sneakers", sales: 95 },
@@ -69,7 +49,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // PieChart component
   const PieChart = ({ data }) => {
     if (!data || data.length === 0) return null;
 
@@ -116,7 +95,7 @@ export default function AdminDashboard() {
   return (
     <div className="merchant-dashboard">
       <div className="merchant-header">
-        <h2>Overview</h2>
+        <h2>Analytics</h2>
       </div>
 
       {error && (
@@ -125,22 +104,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Stats Row */}
-      <div className="dashboard-stats-row">
-        {stats.map((item, i) => (
-          <div key={i} className="dashboard-stat-card">
-            <p className="stat-title">{item.title}</p>
-            <h2 className="stat-value">
-              {item.loading ? "Loading..." : item.value}
-            </h2>
-          </div>
-        ))}
-      </div>
-
-      {/* Chart & Top Products */}
       <div className="dashboard-main-grid">
-
-        {/* Pie Chart */}
         <div className="dashboard-card">
           <p className="section-title">Top 5 Products Sales Distribution</p>
 
@@ -149,8 +113,6 @@ export default function AdminDashboard() {
           ) : (
             <>
               <PieChart data={pieChartData} />
-
-              {/* Legend */}
               <div style={{ marginTop: "20px" }}>
                 {pieChartData.map((product, i) => {
                   const colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8"];
@@ -159,13 +121,13 @@ export default function AdminDashboard() {
 
                   return (
                     <div key={i} style={{ display: "flex", alignItems: "center", marginBottom: "10px", fontSize: "14px" }}>
-                      <div 
-                        style={{ 
-                          width: "16px", 
-                          height: "16px", 
-                          backgroundColor: colors[i], 
+                      <div
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          backgroundColor: colors[i],
                           borderRadius: "3px",
-                          marginRight: "10px"
+                          marginRight: "10px",
                         }}
                       ></div>
                       <span style={{ flex: 1 }}>{product.name}</span>
@@ -178,7 +140,6 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Top Products List */}
         <div className="dashboard-card top-products-section">
           <p className="section-title">Top 5 Products</p>
 
@@ -195,7 +156,6 @@ export default function AdminDashboard() {
             </ul>
           )}
         </div>
-
       </div>
     </div>
   );

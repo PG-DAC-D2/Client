@@ -1,47 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../Admin.css";
+import { getOrders } from "../../../../services/apiService";
 
 function Orders() {
-  const orders = [
-    {
-      id: "O-201",
-      merchant: "Rohit Patil",
-      customer: "Jay Raut",
-      totalItems: 3,
-      amount: 1299,
-      status: "Delivered",
-    },
-    {
-      id: "O-202",
-      merchant: "Ajay Sharma",
-      customer: "Om Patil",
-      totalItems: 5,
-      amount: 2499,
-      status: "Pending",
-    },
-    {
-      id: "O-203",
-      merchant: "Karan Patel",
-      customer: "Siddhi Sathe",
-      totalItems: 1,
-      amount: 499,
-      status: "Shipped",
-    },
-    {
-      id: "O-204",
-      merchant: "Sneha Verma",
-      customer: "Shree Kumar",
-      totalItems: 2,
-      amount: 899,
-      status: "Delivered",
-    },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await getOrders();
+      setOrders(res || []);
+      setError("");
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setError("Failed to load orders");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="merchant-products-page">
       <div className="merchant-header">
         <h2>Orders</h2>
       </div>
+
+      {error && <div className="alert alert-warning">{error}</div>}
 
       <div className="merchant-card products-card">
         <table className="table-modern">
@@ -53,20 +43,26 @@ function Orders() {
               <th>Total Items</th>
               <th>Amount</th>
               <th>Status</th>
+              <th>Date</th>
             </tr>
           </thead>
 
           <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} className="table-row">
-                <td>{order.id}</td>
-                <td>{order.customer}</td>
-                <td>{order.merchant}</td>
-                <td>{order.totalItems}</td>
-                <td>₹{order.amount.toLocaleString()}</td>
-                <td>{order.status}</td>
-              </tr>
-            ))}
+            {loading ? (
+              <tr><td colSpan={7}>Loading...</td></tr>
+            ) : (
+              orders.map((order) => (
+                <tr key={order._id || order.id} className="table-row">
+                  <td>{order._id || order.id}</td>
+                  <td>{order.customerName || order.customer || order.buyerName || "-"}</td>
+                  <td>{order.merchantName || order.merchant || "-"}</td>
+                  <td>{order.items ? order.items.length : order.totalItems || "-"}</td>
+                  <td>₹{(order.totalAmount || order.amount || 0).toLocaleString()}</td>
+                  <td>{order.status || "-"}</td>
+                  <td>{(order.createdAt || order.date || "").slice(0, 10)}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

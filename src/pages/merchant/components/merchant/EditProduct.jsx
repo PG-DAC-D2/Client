@@ -1,15 +1,17 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createProduct } from "../../../../services/apiService";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getProductById, updateProduct } from "../../../../services/apiService";
 import "../../Merchant.css";
 
 /**
- * Add Product Page
- * Allows merchants to create a new product entry.
+ * Edit Product Page
+ * Allows merchants to edit an existing product entry.
  */
-function AddProduct() {
+function EditProduct() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { productId } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   // Form state
@@ -19,7 +21,35 @@ function AddProduct() {
     description: "",
     stockQuantity: "",
     imageUrl: "",
+    review: "",
   });
+
+  // Fetch product data on mount
+  useEffect(() => {
+    fetchProduct();
+  }, [productId]);
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      const product = await getProductById(productId);
+      
+      setForm({
+        name: product.name || "",
+        rate: product.rate || "",
+        description: product.description || "",
+        stockQuantity: product.stockQuantity || "",
+        imageUrl: product.imageUrl?.[0] || "",
+        review: product.review || "",
+      });
+      setError("");
+    } catch (err) {
+      console.error("Error fetching product:", err);
+      setError("Failed to load product details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle input updates
   const handleChange = (e) => {
@@ -30,10 +60,10 @@ function AddProduct() {
     }));
   };
 
-  // Submit new product
+  // Submit updated product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     setError("");
 
     try {
@@ -44,38 +74,42 @@ function AddProduct() {
         description: form.description || "",
         stockQuantity: parseInt(form.stockQuantity) || 0,
         imageUrl: form.imageUrl ? [form.imageUrl] : [],
-        merchantId: localStorage.getItem("userId") || "merchant-1", // Get merchant ID from localStorage
+        review: parseInt(form.review) || 0,
       };
 
-      // Call API to create product
-      const response = await createProduct(productData);
-      console.log("Product created successfully:", response);
+      // Call API to update product
+      await updateProduct(productId, productData);
+      console.log("Product updated successfully");
 
-      // Reset form and redirect
-      setForm({
-        name: "",
-        rate: "",
-        description: "",
-        stockQuantity: "",
-        imageUrl: "",
-      });
-
-      // Navigate back to products and trigger refresh
+      // Navigate back to products
       navigate("/merchant/products", { state: { refresh: true } });
     } catch (err) {
-      console.error("Error creating product:", err);
-      setError(err.message || "Failed to create product. Please try again.");
+      console.error("Error updating product:", err);
+      setError(err.message || "Failed to update product. Please try again.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="merchant-addproduct-page">
+        <div className="merchant-header">
+          <h2>Edit Product</h2>
+        </div>
+        <div className="merchant-card add-product-card">
+          <p style={{ textAlign: "center", padding: "20px" }}>Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="merchant-addproduct-page">
 
       {/* PAGE HEADER */}
       <div className="merchant-header">
-        <h2>Add Product</h2>
+        <h2>Edit Product</h2>
       </div>
 
       {/* ERROR MESSAGE */}
@@ -88,7 +122,7 @@ function AddProduct() {
       {/* FORM CARD */}
       <div className="merchant-card add-product-card">
 
-        <h3>Add New Product</h3>
+        <h3>Update Product</h3>
 
         <form className="add-form" onSubmit={handleSubmit}>
 
@@ -130,6 +164,18 @@ function AddProduct() {
             min="0"
           />
 
+          {/* SALES COUNT */}
+          <label htmlFor="review">Sales Count</label>
+          <input
+            id="review"
+            name="review"
+            type="number"
+            placeholder="Enter sales count"
+            value={form.review}
+            onChange={handleChange}
+            min="0"
+          />
+
           {/* DESCRIPTION */}
           <label htmlFor="description">Description</label>
           <textarea
@@ -152,10 +198,20 @@ function AddProduct() {
             onChange={handleChange}
           />
 
-          {/* SUBMIT BUTTON */}
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Adding Product..." : "Add Product"}
-          </button>
+          {/* BUTTON GROUP */}
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? "Updating Product..." : "Update Product"}
+            </button>
+            <button 
+              type="button" 
+              className="btn-secondary" 
+              onClick={() => navigate("/merchant/products")}
+              style={{ padding: "10px 20px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+            >
+              Cancel
+            </button>
+          </div>
 
         </form>
       </div>
@@ -163,4 +219,4 @@ function AddProduct() {
   );
 }
 
-export default AddProduct;
+export default EditProduct;
