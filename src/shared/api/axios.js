@@ -1,45 +1,49 @@
 import axios from "axios";
 
-// Helper to decode JWT for debugging
-const decodeJWT = (token) => {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    return JSON.parse(atob(parts[1]));
-  } catch (e) {
-    return null;
-  }
-};
-
-const instance = axios.create({
+// Create axios instance for API Gateway
+const api = axios.create({
   baseURL: "http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
-    "X-User-Id": JSON.parse(localStorage.getItem("user"))?.id || null
-  }
+  },
 });
 
-instance.interceptors.request.use(
+// Request interceptor (sets auth headers dynamically)
+api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+
+    // ✅ Set Authorization header if token exists
     if (token) {
-      // Create a fresh headers object to ensure it is not lost
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`
-      };
-      
-      // Useful for verifying the token being sent matches your login
-      const payload = decodeJWT(token);
-      console.log("🔐 Authorization header strictly set for user:", payload?.sub || payload?.user_id);
-    } else {
-      console.warn("⚠️ No token found in localStorage");
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
+    // ✅ Set user ID header dynamically (SAFE - per request)
+    if (user?.id) {
+      config.headers["X-User-Id"] = user.id;
+    } else {
+      delete config.headers["X-User-Id"];
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-export default instance;
+// Response interceptor (handles session expiry)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // If 401 Unauthorized, session has expired
+    if (error.response?.status === 401) {
+      console.warn("Session expired. Redirecting to login.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;

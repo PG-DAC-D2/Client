@@ -1,16 +1,14 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080';
-
-const apiService = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({
+  baseURL: 'http://localhost:8080',
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 });
 
-// Add Authorization header interceptor
-apiService.interceptors.request.use((config) => {
+// Request interceptor - set JWT token dynamically
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -18,236 +16,50 @@ apiService.interceptors.request.use((config) => {
   return config;
 });
 
-/**
- * Process a payment
- * @param {Object} paymentData - Payment data object
- * @returns {Promise<Object>} Payment response
- */
-export const processPayment = async (paymentData) => {
-  try {
-    const response = await apiService.post('/api/payments/process', paymentData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+/* ================= PAYMENT SERVICE ================= */
 
-/**
- * Get user notifications
- * @param {string} email - User email
- * @returns {Promise<Array>} Array of notifications
- */
-export const getUserNotifications = async (email) => {
-  try {
-    const response = await apiService.get(`/api/notifications/email/${email}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching notifications:', error);
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Create a new product
- * @param {Object} productData - Product data object
- * @returns {Promise<Object>} Created product response
- */
-export const createProduct = async (productData) => {
-  try {
-    const response = await apiService.post('/api/products', productData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Get all products
- * @returns {Promise<Array>} Array of products
- */
-export const getProducts = async () => {
-  try {
-    const response = await apiService.get('/api/products');
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Get product by ID
- * @param {string} productId - Product ID
- * @returns {Promise<Object>} Product object
- */
-export const getProductById = async (productId) => {
-  try {
-    const response = await apiService.get(`/api/products/${productId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Update product
- * @param {string} productId - Product ID
- * @param {Object} productData - Updated product data
- * @returns {Promise<Object>} Updated product response
- */
-export const updateProduct = async (productId, productData) => {
-  try {
-    const response = await apiService.put(`/api/products/${productId}`, productData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Delete product
- * @param {string} productId - Product ID
- * @returns {Promise<Object>} Delete response
- */
-export const deleteProduct = async (productId) => {
-  try {
-    const response = await apiService.delete(`/api/products/${productId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
-
-/**
- * Get all orders (for dashboard statistics)
- * @returns {Promise<Array>} Array of orders
- */
-export const getOrders = async () => {
-  try {
-    const response = await apiService.get('/api/orders');
-    return response.data;
-  } catch (error) {
-    // Return empty array if endpoint doesn't exist
-    console.warn("Orders endpoint not available:", error.message);
-    return [];
-  }
-};
-
-/**
- * Get sales data for the last 7 days
- * Aggregates order data by date
- * @returns {Promise<Array>} Array of daily sales data for last 7 days
- */
-export const getSalesDataLast7Days = async () => {
-  try {
-    // Fetch all orders
-    const orders = await getOrders();
-    
-    // Initialize array for last 7 days with 0 sales
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      last7Days.push({
-        date: date.toISOString().split('T')[0],
-        sales: 0
-      });
-    }
-
-    // Aggregate orders by date
-    orders.forEach(order => {
-      const orderDate = new Date(order.createdAt || order.date);
-      const dateStr = orderDate.toISOString().split('T')[0];
-      
-      const dayData = last7Days.find(d => d.date === dateStr);
-      if (dayData) {
-        // Sum the order total or quantity
-        dayData.sales += order.totalAmount ? Math.round(order.totalAmount / 1000) : 1;
+export const paymentAPI = {
+  // Create Razorpay order (converts object params to query params)
+  createRazorpayOrder: (params) =>
+    api.post("/api/payments/razorpay/create-order", null, { 
+      params: {
+        orderId: params.orderId,
+        amount: params.amount,
+        currency: params.currency,
+        email: params.userEmail,
+        phoneNumber: params.phoneNumber
       }
-    });
+    }),
 
-    return last7Days.map(d => d.sales);
-  } catch (error) {
-    console.warn("Error calculating sales data:", error.message);
-    // Return empty array to fallback to dummy data
-    return [];
-  }
+  // Verify Razorpay payment signature
+  verifyRazorpayPayment: (params) =>
+    api.post("/api/payments/razorpay/verify", null, { 
+      params: {
+        orderId: params.orderId,
+        paymentId: params.paymentId,
+        signature: params.signature
+      }
+    }),
+
+  // Process payment (triggers Kafka event)
+  processPayment: (data) =>
+    api.post("/api/payments/process", data),
+
+  // Get payment by order ID
+  getPaymentByOrderId: (orderId) =>
+    api.get(`/api/payments/order/${orderId}`)
 };
 
-/**
- * Send notification (SMS or EMAIL)
- * @param {Object} notificationData - Notification data
- * @returns {Promise<Object>} Notification response
- */
-export const sendNotification = async (notificationData) => {
-  try {
-    const response = await apiService.post('/api/notifications/send', notificationData);
-    return response.data;
-  } catch (error) {
-    console.error('Error sending notification:', error);
-    throw error.response?.data || error.message;
-  }
+/* ================= NOTIFICATION SERVICE ================= */
+
+export const notificationAPI = {
+  // Get notifications by order ID
+  getByOrderId: (orderId) =>
+    api.get(`/api/notifications/order/${orderId}`),
+
+  // Get notifications by email
+  getByEmail: (email) =>
+    api.get(`/api/notifications/email/${email}`)
 };
 
-/**
- * Send SMS notification via Twilio
- * @param {string} phoneNumber - Phone number to send to
- * @param {string} message - Message content
- * @returns {Promise<Object>} SMS response
- */
-export const sendSmsNotification = async (phoneNumber, message) => {
-  try {
-    const response = await sendNotification({
-      notificationType: 'SMS',
-      phoneNumber: phoneNumber,
-      message: message,
-      recipientEmail: null,
-      subject: null,
-      orderId: null
-    });
-    return response;
-  } catch (error) {
-    console.error('Error sending SMS:', error);
-    throw error;
-  }
-};
-
-/**
- * Send email notification
- * @param {string} email - Email address
- * @param {string} subject - Email subject
- * @param {string} message - Email content
- * @returns {Promise<Object>} Email response
- */
-export const sendEmailNotification = async (email, subject, message) => {
-  try {
-    const response = await sendNotification({
-      notificationType: 'EMAIL',
-      recipientEmail: email,
-      subject: subject,
-      message: message,
-      phoneNumber: null,
-      orderId: null
-    });
-    return response;
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
-  }
-};
-
-/**
- * Create a notification record
- * @param {Object} notificationData - Notification data
- * @returns {Promise<Object>} Notification response
- */
-export const createNotification = async (notificationData) => {
-  try {
-    const response = await sendNotification(notificationData);
-    return response;
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    throw error;
-  }
-};
-
-export default apiService;
+export default api;
