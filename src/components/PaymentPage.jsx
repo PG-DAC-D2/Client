@@ -1,35 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { processPayment } from '../services/apiService';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { paymentAPI } from '../services/apiService';
 import Navbar from '../shared/common/navbar/Navbar';
 import './PaymentPage.css';
 
 function PaymentPage() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('UPI');
+  const { state } = useLocation();
+  
+  // ✅ orderId & amount come from Checkout (not user input or random)
+  const orderId = state?.orderId;
+  const amount = state?.amount;
+  const paymentMethod = state?.paymentMethod || 'RAZORPAY';
+  
   const [loading, setLoading] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!amount || parseFloat(amount) <= 0) {
-      setAlertType('danger');
-      setAlertMessage('Please enter a valid amount.');
-      return;
+  
+  // Verify orderId & amount exist, redirect if missing
+  useEffect(() => {
+    if (!orderId || !amount) {
+      setAlertType('warning');
+      setAlertMessage('Missing order details. Redirecting to checkout...');
+      const timer = setTimeout(() => navigate('/checkout'), 2000);
+      return () => clearTimeout(timer);
     }
+  }, [orderId, amount, navigate]);
 
+  // Load Razorpay SDK
+  const loadRazorpay = () =>
+    new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+
+  // Handle payment with Razorpay
+  const handlePayment = async () => {
     setLoading(true);
     setAlertMessage('');
 
     try {
-      const orderId = Math.floor(Math.random() * 9000) + 1000; // Random 4-digit number
-
-      // prefer phone fields commonly used in user object
       const phoneNumber = user?.phone || user?.phoneNumber || user?.mobile || '';
 
       if (!phoneNumber || phoneNumber.length !== 10) {
@@ -39,30 +54,80 @@ function PaymentPage() {
         return;
       }
 
-      const paymentData = {
-        orderId: orderId, // send numeric orderId
-        userName: user?.name || '',
-        userEmail: user?.email || '',
-        phoneNumber: phoneNumber,
-        amount: parseFloat(amount),
+      // 1️⃣ Load Razorpay SDK
+      const loaded = await loadRazorpay();
+      if (!loaded) throw new Error('Razorpay SDK failed to load');
+
+      // 2️⃣ Create Razorpay Order
+      const { data } = await paymentAPI.createRazorpayOrder({
+        orderId,
+        amount,
         currency: 'INR',
-        paymentMethod: paymentMethod,
+        userEmail: user?.email,
+        phoneNumber,
+      });
+
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: 'INR',
+        name: 'VANILO Store',
+        description: `Order #${orderId}`,
+        order_id: data.orderId,
+
+        handler: async (response) => {
+          try {
+            // 3️⃣ Verify payment signature
+            const verifyRes = await paymentAPI.verifyRazorpayPayment({
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+
+            if (verifyRes.data.status !== 'SUCCESS') {
+              throw new Error('Payment verification failed');
+            }
+
+            // 4️⃣ Process payment (triggers Kafka → Notification)
+            await paymentAPI.processPayment({
+              orderId,
+              amount,
+              currency: 'INR',
+              paymentMethod: 'RAZORPAY',
+              userEmail: user?.email,
+              userName: user?.name,
+              phoneNumber,
+            });
+
+            // 5️⃣ Success - redirect to dashboard
+            setAlertType('success');
+            setAlertMessage(`Payment successful! Redirecting to orders...`);
+            setTimeout(() => {
+              navigate('/account', { state: { activeTab: 'orders' } });
+            }, 1500);
+          } catch (err) {
+            console.error('Payment processing error:', err);
+            setAlertType('danger');
+            setAlertMessage(err.message || 'Payment processing failed. Please contact support.');
+            setLoading(false);
+          }
+        },
+
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: phoneNumber,
+        },
+
+        theme: { color: '#667eea' },
       };
 
-      const response = await processPayment(paymentData);
-
-      setAlertType('success');
-      setAlertMessage(
-        `Payment successful! Order ID: ${orderId}. Amount: ₹${amount}`
-      );
-      setAmount('');
-      setPaymentMethod('UPI');
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
+      console.error('Razorpay error:', error);
       setAlertType('danger');
-      setAlertMessage(
-        `Payment failed: ${error?.message || 'Please try again.'}`
-      );
-    } finally {
+      setAlertMessage(error?.message || 'Payment initialization failed. Please try again.');
       setLoading(false);
     }
   };
@@ -110,7 +175,7 @@ function PaymentPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <div>
               {/* Name Field (Read-only) */}
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
@@ -149,50 +214,54 @@ function PaymentPage() {
                 />
               </div>
 
-              {/* Amount Field */}
+              {/* Order ID Field (Read-only) */}
               <div className="mb-3">
+                <label htmlFor="orderId" className="form-label">
+                  <i className="fas fa-receipt me-2"></i>Order ID
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="orderId"
+                  value={orderId || ''}
+                  disabled
+                  style={{
+                    backgroundColor: '#e9ecef',
+                    cursor: 'not-allowed',
+                  }}
+                />
+              </div>
+
+              {/* Amount Field (Read-only from Order) */}
+              <div className="mb-4">
                 <label htmlFor="amount" className="form-label">
-                  Amount (INR) <span className="text-danger">*</span>
+                  Amount (INR)
                 </label>
                 <div className="input-group">
                   <span className="input-group-text">₹</span>
                   <input
-                    type="number"
+                    type="text"
                     className="form-control"
                     id="amount"
-                    placeholder="Enter amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    step="0.01"
-                    min="0"
-                    required
+                    value={(amount || 0).toFixed(2)}
+                    disabled
+                    style={{
+                      backgroundColor: '#e9ecef',
+                      cursor: 'not-allowed',
+                      fontSize: '1.25rem',
+                      fontWeight: 'bold',
+                    }}
                   />
                 </div>
               </div>
 
-              {/* Payment Method Dropdown */}
-              <div className="mb-4">
-                <label htmlFor="paymentMethod" className="form-label">
-                  Payment Method <span className="text-danger">*</span>
-                </label>
-                <select
-                  className="form-select"
-                  id="paymentMethod"
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                >
-                  <option value="UPI">UPI</option>
-                  <option value="Card">Card</option>
-                  <option value="NetBanking">Net Banking</option>
-                </select>
-              </div>
-
-              {/* Submit Button */}
+              {/* Payment Button */}
               <div className="d-grid gap-2">
                 <button
-                  type="submit"
+                  type="button"
                   className="btn btn-success btn-lg"
-                  disabled={loading}
+                  onClick={handlePayment}
+                  disabled={loading || !orderId || !amount}
                 >
                   {loading ? (
                     <>
@@ -205,7 +274,7 @@ function PaymentPage() {
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-credit-card me-2"></i>Pay Now
+                      <i className="fas fa-credit-card me-2"></i>Pay with Razorpay
                     </>
                   )}
                 </button>
@@ -215,7 +284,7 @@ function PaymentPage() {
                 <i className="fas fa-shield-alt me-1"></i>Your payment is secure
                 and encrypted.
               </p>
-            </form>
+            </div>
           </div>
         </div>
       </div>

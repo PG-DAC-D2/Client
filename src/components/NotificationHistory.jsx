@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getUserNotifications, sendSmsNotification, sendEmailNotification } from '../services/apiService';
+import { notificationAPI } from '../services/apiService';
 import Navbar from '../shared/common/navbar/Navbar';
 import './NotificationHistory.css';
 
@@ -11,23 +11,22 @@ function NotificationHistory() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!isAuthenticated || !user?.email) {
-        setError('User email not found.');
-        setLoading(false);
-        return;
-      }
+    if (!isAuthenticated || !user?.email) {
+      setError('User email not found.');
+      setLoading(false);
+      return;
+    }
 
+    const fetchNotifications = async () => {
       try {
         setLoading(true);
         setError('');
         console.log(`Fetching notifications for: ${user.email}`);
-        const data = await getUserNotifications(user.email);
-        console.log('Notifications received:', data);
-        setNotifications(Array.isArray(data) ? data : []);
+        const res = await notificationAPI.getByEmail(user.email);
+        console.log('Notifications received:', res.data);
+        setNotifications(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error('Error fetching notifications:', err);
         setError(
@@ -41,37 +40,6 @@ function NotificationHistory() {
 
     fetchNotifications();
   }, [user?.email, isAuthenticated]);
-
-  const sendTestNotifications = async () => {
-    if (!user?.email) return;
-    
-    setSending(true);
-    try {
-      // Send test SMS
-      await sendSmsNotification(
-        '9309440972',
-        `Hello! This is a test notification from Vanilo. Your account ${user.email} is active.`
-      );
-      
-      // Send test Email
-      await sendEmailNotification(
-        user.email,
-        'Notification Test from Vanilo',
-        `Hello ${user.name || 'User'},\n\nThis is a test notification from Vanilo.\n\nBest regards,\nVanilo Team`
-      );
-
-      alert('✅ Test SMS and Email sent successfully!');
-      
-      // Refresh notifications list
-      const data = await getUserNotifications(user.email);
-      setNotifications(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error('Error sending test notifications:', err);
-      alert(`❌ Failed to send test notifications: ${err?.message || 'Unknown error'}`);
-    } finally {
-      setSending(false);
-    }
-  };
 
   const getStatusBadge = (status) => {
     if (status === 'SENT') {
@@ -123,17 +91,10 @@ function NotificationHistory() {
       <div className="notifications-container">
       <div className="notifications-card">
         <div className="card shadow">
-          <div className="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <div className="card-header bg-info text-white">
             <h3 className="mb-0">
               <i className="fas fa-bell me-2"></i>Notification History
             </h3>
-            <button 
-              className="btn btn-sm btn-light"
-              onClick={sendTestNotifications}
-              disabled={sending}
-            >
-              {sending ? '📤 Sending...' : '📤 Send Test SMS & Email'}
-            </button>
           </div>
 
           <div className="card-body">
@@ -162,7 +123,7 @@ function NotificationHistory() {
               </div>
             ) : notifications.length === 0 ? (
               <div className="alert alert-info text-center" role="alert">
-                <i className="fas fa-inbox me-2"></i>No notifications found. Try sending a test notification.
+                <i className="fas fa-inbox me-2"></i>No notifications found. Check back after placing an order.
               </div>
             ) : (
               <div className="table-responsive">
