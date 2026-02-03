@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { getUserNotifications } from '../services/apiService';
+import { useNavigate } from 'react-router-dom';
+import { getUserNotifications, sendSmsNotification, sendEmailNotification } from '../services/apiService';
+import Navbar from '../shared/common/navbar/Navbar';
 import './NotificationHistory.css';
 
 function NotificationHistory() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!user?.email) {
+      if (!isAuthenticated || !user?.email) {
         setError('User email not found.');
         setLoading(false);
         return;
@@ -20,9 +24,12 @@ function NotificationHistory() {
       try {
         setLoading(true);
         setError('');
+        console.log(`Fetching notifications for: ${user.email}`);
         const data = await getUserNotifications(user.email);
+        console.log('Notifications received:', data);
         setNotifications(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.error('Error fetching notifications:', err);
         setError(
           `Failed to load notifications: ${err?.message || 'Please try again later.'}`
         );
@@ -33,13 +40,46 @@ function NotificationHistory() {
     };
 
     fetchNotifications();
-  }, [user?.email]);
+  }, [user?.email, isAuthenticated]);
+
+  const sendTestNotifications = async () => {
+    if (!user?.email) return;
+    
+    setSending(true);
+    try {
+      // Send test SMS
+      await sendSmsNotification(
+        '9309440972',
+        `Hello! This is a test notification from Vanilo. Your account ${user.email} is active.`
+      );
+      
+      // Send test Email
+      await sendEmailNotification(
+        user.email,
+        'Notification Test from Vanilo',
+        `Hello ${user.name || 'User'},\n\nThis is a test notification from Vanilo.\n\nBest regards,\nVanilo Team`
+      );
+
+      alert('✅ Test SMS and Email sent successfully!');
+      
+      // Refresh notifications list
+      const data = await getUserNotifications(user.email);
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error sending test notifications:', err);
+      alert(`❌ Failed to send test notifications: ${err?.message || 'Unknown error'}`);
+    } finally {
+      setSending(false);
+    }
+  };
 
   const getStatusBadge = (status) => {
     if (status === 'SENT') {
-      return <span className="badge bg-success">SENT</span>;
+      return <span className="badge bg-success">✓ SENT</span>;
     } else if (status === 'FAILED') {
-      return <span className="badge bg-danger">FAILED</span>;
+      return <span className="badge bg-danger">✗ FAILED</span>;
+    } else if (status === 'PENDING') {
+      return <span className="badge bg-warning">⏳ PENDING</span>;
     } else {
       return <span className="badge bg-secondary">{status}</span>;
     }
@@ -58,29 +98,48 @@ function NotificationHistory() {
     });
   };
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-warning" role="alert">
-          Please log in to view your notifications.
+      <>
+        <Navbar />
+        <div className="container mt-5 pt-5">
+          <div className="alert alert-warning" role="alert">
+            <i className="fas fa-lock me-2"></i>Please log in to view your notifications.
+          </div>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => navigate('/login')}
+          >
+            Go to Login
+          </button>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="notifications-container">
+    <>
+      <Navbar />
+      <div className="notifications-container">
       <div className="notifications-card">
         <div className="card shadow">
-          <div className="card-header bg-info text-white">
+          <div className="card-header bg-info text-white d-flex justify-content-between align-items-center">
             <h3 className="mb-0">
               <i className="fas fa-bell me-2"></i>Notification History
             </h3>
+            <button 
+              className="btn btn-sm btn-light"
+              onClick={sendTestNotifications}
+              disabled={sending}
+            >
+              {sending ? '📤 Sending...' : '📤 Send Test SMS & Email'}
+            </button>
           </div>
 
           <div className="card-body">
             {error && (
               <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                <i className="fas fa-exclamation-circle me-2"></i>
                 {error}
                 <button
                   type="button"
@@ -103,7 +162,7 @@ function NotificationHistory() {
               </div>
             ) : notifications.length === 0 ? (
               <div className="alert alert-info text-center" role="alert">
-                <i className="fas fa-inbox me-2"></i>No notifications found.
+                <i className="fas fa-inbox me-2"></i>No notifications found. Try sending a test notification.
               </div>
             ) : (
               <div className="table-responsive">
@@ -120,6 +179,9 @@ function NotificationHistory() {
                         <i className="fas fa-message me-2"></i>Message
                       </th>
                       <th scope="col">
+                        <i className="fas fa-phone me-2"></i>Recipient
+                      </th>
+                      <th scope="col">
                         <i className="fas fa-flag me-2"></i>Status
                       </th>
                     </tr>
@@ -127,14 +189,23 @@ function NotificationHistory() {
                   <tbody>
                     {notifications.map((notification, index) => (
                       <tr key={index}>
-                        <td>{formatDate(notification.createdDate)}</td>
+                        <td>{formatDate(notification.createdDate || notification.timestamp)}</td>
                         <td>
                           <span className="badge bg-light text-dark">
                             {notification.orderId || 'N/A'}
                           </span>
                         </td>
-                        <td>{notification.message || 'N/A'}</td>
-                        <td>{getStatusBadge(notification.status)}</td>
+                        <td>{notification.message || notification.content || 'N/A'}</td>
+                        <td>
+                          {notification.phoneNumber && (
+                            <span className="badge bg-primary">{notification.phoneNumber}</span>
+                          )}
+                          {notification.recipient && !notification.phoneNumber && (
+                            <span className="badge bg-secondary">{notification.recipient}</span>
+                          )}
+                          {!notification.phoneNumber && !notification.recipient && 'N/A'}
+                        </td>
+                        <td>{getStatusBadge(notification.status || 'SENT')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -144,7 +215,8 @@ function NotificationHistory() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
