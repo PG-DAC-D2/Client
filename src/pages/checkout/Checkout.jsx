@@ -90,19 +90,20 @@ function Checkout() {
         throw new Error("Order id not returned");
       }
 
-      // If not COD, simulate payment and confirm on server
-      if (paymentMethod !== "COD") {
-        // simulate payment gateway (replace with real integration)
-        await new Promise((r) => setTimeout(r, 800));
-        // call confirm payment endpoint
-        await api.post(`/api/orders/${orderId}/confirm-payment`);
-      }
+      // ✅ REMOVED: Payment confirmation happens ONLY in PaymentPage after Razorpay verification
+      // Do NOT call confirm-payment here - let Payment Service handle it via Razorpay
 
       // clear cart
       dispatch(clearCartAPI());
 
-      // Navigate to payment page
-      navigate("/payment");
+      // ✅ Navigate to payment page with orderId & amount
+      navigate("/payment", {
+        state: {
+          orderId,
+          amount: total,
+          paymentMethod,
+        }
+      });
     } catch (err) {
       console.error(err);
       alert("Failed to place order. Please try again.");
