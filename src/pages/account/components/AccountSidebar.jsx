@@ -32,7 +32,6 @@ function AccountSidebar({ activeTab, setActiveTab }) {
 
   const menuItems = [
     { key: "orders", label: "Orders", icon: <FiBox /> },
-    { key: "wishlist", label: "Favorites", icon: <FiHeart /> },
     { key: "personal", label: "Personal Data", icon: <FiUser /> },
     { key: "address", label: "Addresses", icon: <FiHome /> },
   ];

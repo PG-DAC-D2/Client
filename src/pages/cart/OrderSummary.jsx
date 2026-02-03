@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import api from "../../shared/api/axios";
+import { clearCartAPI } from "../../app/slices/cartSlice";
 
 function OrderSummary({ cartItems = [] }) {
   const subTotal = cartItems.reduce(
@@ -10,6 +14,14 @@ function OrderSummary({ cartItems = [] }) {
   const delivery = 0;
   const tax = 20;
   const total = Math.max(0, subTotal - discount + delivery + tax);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [processing, setProcessing] = useState(false);
+
+  const handleCheckout = () => {
+    // navigate to checkout page where user can enter address and choose payment
+    navigate("/checkout");
+  };
 
   return (
     <div className="cart-order-card">
@@ -37,7 +49,9 @@ function OrderSummary({ cartItems = [] }) {
         <span className="cart-order-total">₹{total.toFixed(2)}</span>
       </div>
 
-      <button className="cart-checkout-btn">Checkout</button>
+      <button className="cart-checkout-btn" onClick={handleCheckout} disabled={processing}>
+        {processing ? "Processing…" : "Checkout"}
+      </button>
     </div>
   );
 }

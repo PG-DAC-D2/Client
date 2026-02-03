@@ -138,7 +138,23 @@ const cartSlice = createSlice({
       // Handle updating quantity (Syncs with server-provided list)
       .addCase(updateCartItem.fulfilled, (state, action) => {
         const cart = action.payload || {};
-        state.items = cart.items || [];
+        // If server returned a full items list, replace state.
+        if (Array.isArray(cart.items) && cart.items.length > 0) {
+          state.items = cart.items;
+          return;
+        }
+
+        // Otherwise, fall back to updating the single item in-place using the original args
+        const arg = action?.meta?.arg || {};
+        const { cartItemId, quantity } = arg;
+        if (cartItemId != null) {
+          state.items = state.items.map((it) => {
+            if (String(it.cartItemId) === String(cartItemId) || String(it.id) === String(cartItemId)) {
+              return { ...it, quantity };
+            }
+            return it;
+          });
+        }
       })
 
       // Handle item removal

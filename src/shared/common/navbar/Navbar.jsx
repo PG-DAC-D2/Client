@@ -52,11 +52,11 @@ function Navbar() {
             </button>
           </form>
 
-          {/* Address */}
+          {/* Address
           <div className="address">
             <p className="address-line1">Deliver to</p>
             <p className="address-line2">Pune, Maharashtra</p>
-          </div>
+          </div> */}
         </div>
 
         {/* Icons */}

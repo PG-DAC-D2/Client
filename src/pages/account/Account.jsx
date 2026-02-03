@@ -1,21 +1,3 @@
-// import React from 'react'
-// import Navbar from '../../shared/common/navbar/Navbar'
-
-// function Account() {
-//   return (
-//     <div>
-//       <Navbar/>
-//       <br />
-//       <br />
-//       <br />
-//       <br />
-//       Accounts
-//       sahil will do it
-//     </div>
-//   )
-// }
-
-// export default Account
 
 import React, { useState } from "react";
 import Navbar from "../../shared/common/navbar/Navbar";
@@ -36,8 +18,6 @@ function Account() {
         return <CustomerPersonalInfo />;
       case "address":
         return <Address />;
-      case "wishlist":
-        return <Wishlist />;
       default:
         return <Orders />;
     }

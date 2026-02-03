@@ -22,6 +22,7 @@ import Cart from "./pages/cart/Cart";
 import Search from "./pages/search/Search";
 import Account from "./pages/account/Account";
 import Product from "./pages/product/Product";
+import Checkout from "./pages/checkout/Checkout";
 
 import Merchant from "./pages/merchant/Merchant";
 import MerchantDashboard from "./pages/merchant/components/merchant/MerchantDashboard";
@@ -109,6 +110,7 @@ function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="search" element={<Search />} />
         <Route path="account" element={<Account />} />
+        <Route path="checkout" element={<Checkout />} />
         <Route path="payment" element={isAuthenticated ? <PaymentPage /> : <Navigate to="/login" />} />
         <Route path="notifications" element={isAuthenticated ? <NotificationHistory /> : <Navigate to="/login" />} />
       </Routes>
