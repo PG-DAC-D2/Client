@@ -37,6 +37,9 @@ import Merchants from "./pages/admin/components/admin/Merchant";
 import AdminOrders from "./pages/admin/components/admin/AdminOrders";
 import Analytics from "./pages/admin/components/admin/Analytics";
 
+import PaymentPage from "./components/PaymentPage";
+import NotificationHistory from "./components/NotificationHistory";
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, role } = useSelector((state) => state.auth);
@@ -106,6 +109,8 @@ function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="search" element={<Search />} />
         <Route path="account" element={<Account />} />
+        <Route path="payment" element={isAuthenticated ? <PaymentPage /> : <Navigate to="/login" />} />
+        <Route path="notifications" element={isAuthenticated ? <NotificationHistory /> : <Navigate to="/login" />} />
       </Routes>
     </div>
   );

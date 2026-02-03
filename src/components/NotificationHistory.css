@@ -1,0 +1,140 @@
+.notifications-container {
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+  background-color: #f8f9fa;
+}
+
+.notifications-card {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.notifications-card .card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: slideIn 0.5s ease-out;
+}
+
+.notifications-card .card-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+}
+
+.notifications-card .card-header h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.notifications-card .card-body {
+  padding: 2rem;
+}
+
+.notifications-card .table {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.notifications-card .table thead {
+  background-color: #f1f3f5;
+}
+
+.notifications-card .table thead th {
+  border: none;
+  padding: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.notifications-card .table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.notifications-card .table tbody tr:hover {
+  background-color: #f8f9fa;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.notifications-card .table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.notifications-card .badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.notifications-card .badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.notifications-card .badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.notifications-card .badge.bg-light {
+  border: 1px solid #ddd;
+  padding: 0.4rem 0.7rem;
+}
+
+.notifications-card .alert {
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 1.5rem;
+}
+
+.notifications-card .spinner-border {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .notifications-container {
+    padding: 1rem 0.5rem;
+    min-height: auto;
+  }
+
+  .notifications-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .notifications-card .card-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .notifications-card .table {
+    font-size: 0.85rem;
+  }
+
+  .notifications-card .table thead th,
+  .notifications-card .table tbody td {
+    padding: 0.75rem 0.5rem;
+  }
+}

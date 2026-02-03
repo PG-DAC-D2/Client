@@ -1,0 +1,120 @@
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.payment-card {
+  width: 100%;
+  max-width: 500px;
+}
+
+.payment-card .card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: slideIn 0.5s ease-out;
+}
+
+.payment-card .card-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.payment-card .card-header h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.payment-card .card-body {
+  padding: 2rem;
+}
+
+.payment-card .form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.payment-card .form-control,
+.payment-card .form-select {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.payment-card .form-control:focus,
+.payment-card .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.payment-card .btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.payment-card .btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+}
+
+.payment-card .btn-success:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.payment-card .input-group-text {
+  background-color: #f8f9fa;
+  border-radius: 8px 0 0 8px;
+}
+
+.payment-card .alert {
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: none;
+}
+
+.payment-card .text-danger {
+  color: #dc3545 !important;
+}
+
+.payment-card .text-muted {
+  font-size: 0.9rem;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-container {
+    min-height: calc(100vh - 150px);
+    padding: 1rem;
+  }
+
+  .payment-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .payment-card .card-header h3 {
+    font-size: 1.25rem;
+  }
+}
