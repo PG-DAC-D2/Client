@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./../../account/Account.css";
 import ReviewForm from "./ReviewForm";
 import api from "../../../shared/api/axios";
+import { paymentAPI, notificationAPI } from "../../../services/apiService";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -12,32 +13,95 @@ function Orders() {
   const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await api.get("/api/orders/my");
-        setOrders(res.data || []);
-      } catch (err) {
-        console.error("Failed to fetch orders:", err);
-        setError("Could not load orders");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
+    fetchOrdersWithStatus();
   }, []);
+
+  const fetchOrdersWithStatus = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1️⃣ Fetch orders
+      const res = await api.get("/api/orders/my");
+      const baseOrders = res.data || [];
+
+      // 2️⃣ Enrich each order with payment + notification status
+      const enrichedOrders = await Promise.all(
+        baseOrders.map(async (order) => {
+          const orderId = order.orderId || order.id;
+
+          let payment = null;
+          let notifications = [];
+
+          try {
+            const pRes = await paymentAPI.getPaymentByOrderId(orderId);
+            payment = pRes.data;
+          } catch (_) {
+            // Payment not found or service error - gracefully continue
+          }
+
+          try {
+            const nRes = await notificationAPI.getByOrderId(orderId);
+            notifications = nRes.data || [];
+          } catch (_) {
+            // Notifications not found or service error - gracefully continue
+          }
+
+          return {
+            ...order,
+            payment,
+            notifications,
+          };
+        })
+      );
+
+      setOrders(enrichedOrders);
+    } catch (err) {
+      console.error("Failed to fetch orders:", err);
+      setError("Could not load orders");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleReviewClick = (order) => {
     setSelectedOrder(order);
     setShowReviewForm(true);
   };
 
-  const handleReviewSubmit = (reviewData) => {
-    console.log("Review submitted:", reviewData);
-    // TODO: Send review to API
-    alert("Thank you for your review!");
+  const renderNotificationStatus = (notifications) => {
+    if (!notifications || notifications.length === 0) {
+      return (
+        <>
+          <div>
+            Email: <span className="status-badge status-processing">PENDING</span>
+          </div>
+          <div>
+            SMS: <span className="status-badge status-processing">PENDING</span>
+          </div>
+        </>
+      );
+    }
+
+    const email = notifications.find(n => n.notificationType === "EMAIL");
+    const sms = notifications.find(n => n.notificationType === "SMS");
+
+    return (
+      <>
+        <div>
+          Email:{" "}
+          <span className={`status-badge status-${email?.status?.toLowerCase() || "processing"}`}>
+            {email?.status || "PENDING"}
+          </span>
+        </div>
+        <div>
+          SMS:{" "}
+          <span className={`status-badge status-${sms?.status?.toLowerCase() || "processing"}`}>
+            {sms?.status || "PENDING"}
+          </span>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -94,6 +158,25 @@ function Orders() {
                   </span>
                 </p>
 
+                {/* PAYMENT STATUS */}
+                <p className="order-label mt-3">
+                  Payment:
+                  <span
+                    className={`status-badge ms-2 ${
+                      order.payment?.status === "SUCCESS"
+                        ? "status-delivered"
+                        : "status-processing"
+                    }`}
+                  >
+                    {order.payment?.status || "PENDING"}
+                  </span>
+                </p>
+
+                {/* NOTIFICATION STATUS */}
+                <div className="order-label mt-2">
+                  {renderNotificationStatus(order.notifications)}
+                </div>
+
               </div>
 
               {/* RIGHT SIDE ACTION BUTTON */}
@@ -122,7 +205,7 @@ function Orders() {
         <ReviewForm
           order={selectedOrder}
           onClose={() => setShowReviewForm(false)}
-          onSubmit={handleReviewSubmit}
+          onSubmit={() => alert("Thank you for your review!")}
         />
       )}
     </>
