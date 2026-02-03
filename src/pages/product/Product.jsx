@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProductById, fetchProducts } from "../../app/slices/productSlice";
+import { addItemToCart } from "../../app/slices/cartSlice";
 import "./Product.css";
 import ProductCard from "../landing/components/ProductCard";
 import Navbar from "../../shared/common/navbar/Navbar";
@@ -58,7 +59,17 @@ function Product() {
 
                         <button
                             className="add-cart-btn-kd"
-                            onClick={() => navigate('/cart')}
+                            onClick={() => {
+                                dispatch(
+                                    addItemToCart({
+                                        ProductId: product._id,
+                                        ProductName: product.name,
+                                        UnitPrice: product.rate,
+                                        Quantity: 1,
+                                    })
+                                );
+                                // navigate('/cart');
+                            }}
                         >
                             Add to Cart
                         </button>

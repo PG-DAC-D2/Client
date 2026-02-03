@@ -33,7 +33,7 @@ function ProductCard({
         Quantity: 1,
       }),
     );
-    navigate("/cart");
+    // navigate("/cart");
   };
 
   return (

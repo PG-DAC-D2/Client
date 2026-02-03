@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "./../../account/Account.css";
+import ReviewForm from "./ReviewForm";
 
 const orders = [
   {
@@ -25,8 +26,23 @@ const orders = [
 ];
 
 function Orders() {
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  const handleReviewClick = (order) => {
+    setSelectedOrder(order);
+    setShowReviewForm(true);
+  };
+
+  const handleReviewSubmit = (reviewData) => {
+    console.log("Review submitted:", reviewData);
+    // TODO: Send review to API
+    alert("Thank you for your review!");
+  };
+
   return (
-    <div className="section-card">
+    <>
+      <div className="section-card">
 
       {/* Title */}
       <h4 className="fw-bold mb-4">Orders</h4>
@@ -76,7 +92,10 @@ function Orders() {
           {/* RIGHT SIDE ACTION BUTTON */}
           <div className="order-actions d-flex flex-column justify-content-center">
             {order.status === "Delivered" ? (
-              <button className="order-btn">VIEW ORDER</button>
+              <>
+              <button className="order-btn mb-2">VIEW ORDER</button>
+              <button className="order-btn" onClick={() => handleReviewClick(order)}>Review</button>
+              </>
             ) : (
               <>
                 <button className="order-btn mb-2">TRACK ORDER</button>
@@ -87,7 +106,17 @@ function Orders() {
 
         </div>
       ))}
-    </div>
+      </div>
+
+      {/* Review Form Modal */}
+      {showReviewForm && selectedOrder && (
+        <ReviewForm
+          order={selectedOrder}
+          onClose={() => setShowReviewForm(false)}
+          onSubmit={handleReviewSubmit}
+        />
+      )}
+    </>
   );
 }
 
