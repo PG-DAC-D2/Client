@@ -39,9 +39,10 @@ export const processPayment = async (paymentData) => {
  */
 export const getUserNotifications = async (email) => {
   try {
-    const response = await apiService.get(`/api/notifications/recipient/${email}`);
+    const response = await apiService.get(`/api/notifications/email/${email}`);
     return response.data;
   } catch (error) {
+    console.error('Error fetching notifications:', error);
     throw error.response?.data || error.message;
   }
 };
@@ -169,6 +170,83 @@ export const getSalesDataLast7Days = async () => {
     console.warn("Error calculating sales data:", error.message);
     // Return empty array to fallback to dummy data
     return [];
+  }
+};
+
+/**
+ * Send notification (SMS or EMAIL)
+ * @param {Object} notificationData - Notification data
+ * @returns {Promise<Object>} Notification response
+ */
+export const sendNotification = async (notificationData) => {
+  try {
+    const response = await apiService.post('/api/notifications/send', notificationData);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    throw error.response?.data || error.message;
+  }
+};
+
+/**
+ * Send SMS notification via Twilio
+ * @param {string} phoneNumber - Phone number to send to
+ * @param {string} message - Message content
+ * @returns {Promise<Object>} SMS response
+ */
+export const sendSmsNotification = async (phoneNumber, message) => {
+  try {
+    const response = await sendNotification({
+      notificationType: 'SMS',
+      phoneNumber: phoneNumber,
+      message: message,
+      recipientEmail: null,
+      subject: null,
+      orderId: null
+    });
+    return response;
+  } catch (error) {
+    console.error('Error sending SMS:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send email notification
+ * @param {string} email - Email address
+ * @param {string} subject - Email subject
+ * @param {string} message - Email content
+ * @returns {Promise<Object>} Email response
+ */
+export const sendEmailNotification = async (email, subject, message) => {
+  try {
+    const response = await sendNotification({
+      notificationType: 'EMAIL',
+      recipientEmail: email,
+      subject: subject,
+      message: message,
+      phoneNumber: null,
+      orderId: null
+    });
+    return response;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a notification record
+ * @param {Object} notificationData - Notification data
+ * @returns {Promise<Object>} Notification response
+ */
+export const createNotification = async (notificationData) => {
+  try {
+    const response = await sendNotification(notificationData);
+    return response;
+  } catch (error) {
+    console.error('Error creating notification:', error);
+    throw error;
   }
 };
 

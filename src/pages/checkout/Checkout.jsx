@@ -101,8 +101,8 @@ function Checkout() {
       // clear cart
       dispatch(clearCartAPI());
 
-      // Navigate to account orders
-      navigate("/account");
+      // Navigate to payment page
+      navigate("/payment");
     } catch (err) {
       console.error(err);
       alert("Failed to place order. Please try again.");

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { processPayment } from '../services/apiService';
+import Navbar from '../shared/common/navbar/Navbar';
 import './PaymentPage.css';
 
 function PaymentPage() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('UPI');
   const [loading, setLoading] = useState(false);
@@ -25,11 +28,19 @@ function PaymentPage() {
 
     try {
       const orderId = Math.floor(Math.random() * 9000) + 1000; // Random 4-digit number
-      const phoneNumber = '9876543210'; // Hardcoded valid 10-digit number
+
+      // prefer phone fields commonly used in user object
+      const phoneNumber = user?.phone || user?.phoneNumber || user?.mobile || '';
+
+      if (!phoneNumber || phoneNumber.length !== 10) {
+        setAlertType('danger');
+        setAlertMessage('Your profile does not contain a valid 10-digit phone number. Please update your account details.');
+        setLoading(false);
+        return;
+      }
 
       const paymentData = {
-        orderId: orderId.toString(),
-        userId: user?.id || '',
+        orderId: orderId, // send numeric orderId
         userName: user?.name || '',
         userEmail: user?.email || '',
         phoneNumber: phoneNumber,
@@ -56,18 +67,29 @@ function PaymentPage() {
     }
   };
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-warning" role="alert">
-          Please log in to proceed with payment.
+      <>
+        <Navbar />
+        <div className="container mt-5">
+          <div className="alert alert-warning" role="alert">
+            <i className="fas fa-lock me-2"></i>Please log in to proceed with payment.
+          </div>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => navigate('/login')}
+          >
+            Go to Login
+          </button>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="payment-container">
+    <>
+      <Navbar />
+      <div className="payment-container">
       <div className="payment-card">
         <div className="card shadow-lg">
           <div className="card-header bg-primary text-white">
@@ -92,28 +114,38 @@ function PaymentPage() {
               {/* Name Field (Read-only) */}
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
-                  Full Name
+                  <i className="fas fa-user me-2"></i>Full Name
                 </label>
                 <input
                   type="text"
                   className="form-control"
                   id="name"
-                  value={user?.name || ''}
-                  readOnly
+                  placeholder="Your full name"
+                  value={user?.name || user?.username || 'User'}
+                  disabled
+                  style={{
+                    backgroundColor: '#e9ecef',
+                    cursor: 'not-allowed',
+                  }}
                 />
               </div>
 
               {/* Email Field (Read-only) */}
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
-                  Email Address
+                  <i className="fas fa-envelope me-2"></i>Email Address
                 </label>
                 <input
                   type="email"
                   className="form-control"
                   id="email"
-                  value={user?.email || ''}
-                  readOnly
+                  placeholder="your.email@example.com"
+                  value={user?.email || 'Not provided'}
+                  disabled
+                  style={{
+                    backgroundColor: '#e9ecef',
+                    cursor: 'not-allowed',
+                  }}
                 />
               </div>
 
@@ -187,7 +219,8 @@ function PaymentPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
