@@ -21,7 +21,6 @@ function NotificationHistory() {
 
     const fetchNotifications = async () => {
       try {
-        setLoading(true);
         setError('');
         console.log(`Fetching notifications for: ${user.email}`);
         const res = await notificationAPI.getByEmail(user.email);
@@ -38,7 +37,12 @@ function NotificationHistory() {
       }
     };
 
+    // Initial load
     fetchNotifications();
+
+    // Poll every 5 seconds to show new notifications when payment is processed
+    const interval = setInterval(fetchNotifications, 5000);
+    return () => clearInterval(interval);
   }, [user?.email, isAuthenticated]);
 
   const getStatusBadge = (status) => {
@@ -150,7 +154,7 @@ function NotificationHistory() {
                   <tbody>
                     {notifications.map((notification, index) => (
                       <tr key={index}>
-                        <td>{formatDate(notification.createdDate || notification.timestamp)}</td>
+                        <td>{formatDate(notification.createdAt || notification.createdDate)}</td>
                         <td>
                           <span className="badge bg-light text-dark">
                             {notification.orderId || 'N/A'}
@@ -161,12 +165,12 @@ function NotificationHistory() {
                           {notification.phoneNumber && (
                             <span className="badge bg-primary">{notification.phoneNumber}</span>
                           )}
-                          {notification.recipient && !notification.phoneNumber && (
-                            <span className="badge bg-secondary">{notification.recipient}</span>
+                          {notification.recipientEmail && !notification.phoneNumber && (
+                            <span className="badge bg-secondary">{notification.recipientEmail}</span>
                           )}
-                          {!notification.phoneNumber && !notification.recipient && 'N/A'}
+                          {!notification.phoneNumber && !notification.recipientEmail && 'N/A'}
                         </td>
-                        <td>{getStatusBadge(notification.status || 'SENT')}</td>
+                        <td>{getStatusBadge(notification.status || 'PENDING')}</td>
                       </tr>
                     ))}
                   </tbody>

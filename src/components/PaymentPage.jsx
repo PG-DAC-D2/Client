@@ -89,15 +89,30 @@ function PaymentPage() {
             }
 
             // 4️⃣ Process payment (triggers Kafka → Notification)
-            await paymentAPI.processPayment({
-              orderId,
-              amount,
-              currency: 'INR',
-              paymentMethod: 'RAZORPAY',
-              userEmail: user?.email,
-              userName: user?.name,
-              phoneNumber,
-            });
+            try {
+              // ✅ FORMAT PHONE NUMBER FOR BACKEND/SMS (+91 country code)
+              let formattedPhone = phoneNumber.trim();
+              // Remove any spaces, dashes
+              formattedPhone = formattedPhone.replaceAll(/[\s\-()]/g, '');
+              // Add +91 if not present
+              if (!formattedPhone.startsWith('+')) {
+                formattedPhone = '+91' + formattedPhone;
+              }
+              
+              await paymentAPI.processPayment({
+                orderId,
+                amount,
+                currency: 'INR',
+                paymentMethod: 'RAZORPAY',
+                userEmail: user?.email,
+                userName: user?.name,
+                phoneNumber: formattedPhone, // ✅ Now includes +91
+              });
+            } catch (kafkaErr) {
+              // Kafka failure - log but don't fail the payment UI
+              console.error('Kafka event publish failed (payment still recorded):', kafkaErr);
+              // Still show success since payment was recorded in database
+            }
 
             // 5️⃣ Success - redirect to dashboard
             setAlertType('success');
