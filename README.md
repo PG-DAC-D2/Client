@@ -1,16 +1,110 @@
-# React + Vite
+# E-Commerce Web Application (Client)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
+This is an **E-Commerce Web Application** built using **microservices architecture**.
 
-Currently, two official plugins are available:
+- Frontend: React  
+- Backend: Multiple microservices  
+- Databases: MongoDB and MySQL  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The frontend (Client) connects to backend services available in a separate repository.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Repositories
 
-## Expanding the ESLint configuration
+- **Frontend (Client)**  
+  https://github.com/PG-DAC-D2/Client  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Backend (Server)**  
+  https://github.com/PG-DAC-D2/Server  
+
+---
+
+## Backend Services (Server)
+
+### User Service (Spring Boot + MySQL)
+- User registration and login  
+- Roles: Customer, Merchant, Admin  
+- JWT authentication  
+
+### Product Service (Node.js + MongoDB)
+- Add, update, delete products  
+- View product list  
+- Wishlist management  
+
+### Order & Payment Service (.NET + MySQL)
+- Place orders  
+- Track order status  
+- Handle payments  
+
+Each service works independently and exposes REST APIs.
+
+---
+
+## Frontend (Client)
+
+- Built using React
+- Uses REST APIs to connect with backend services
+- Features:
+  - User login and signup
+  - Product listing
+  - Wishlist
+  - Order placement
+
+---
+
+## Client–Server Connection
+
+The frontend communicates with backend using HTTP requests.
+
+Example service URLs:
+- User Service: `http://localhost:8080`
+- Product Service: `http://localhost:5000`
+- Order Service: `http://localhost:7000`
+
+JWT token is used for secure communication.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|------|------------|
+| Frontend | React, HTML, CSS, JavaScript |
+| Backend | Node.js, Spring Boot, .NET |
+| Database | MongoDB, MySQL |
+| Security | JWT |
+| Architecture | Microservices |
+
+---
+
+## Sample Data
+
+### Users
+- Customer
+- Merchant
+- Admin
+
+### Products
+- Product ID
+- Name
+- Price
+- Category
+- Stock
+- Description
+
+### Orders
+- Order ID
+- User ID
+- Products
+- Total Amount
+- Status
+
+---
+
+## How to Run Client
+
+```bash
+npm install
+npm start
