@@ -52,7 +52,7 @@ function Product() {
                         <p className="product-desc-kd">{product.description}</p>
 
                         <div className="product-rating-kd">
-                            ⭐ {product.rating} ({product.review} reviews)
+                            Rating: {product.rating} ({product.review} reviews)
                         </div>
 
                         <div className="product-price-kd">₹{product.rate}</div>

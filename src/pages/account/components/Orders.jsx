@@ -21,11 +21,11 @@ function Orders() {
     setError(null);
 
     try {
-      // 1️⃣ Fetch orders
+      // 1. Fetch orders
       const res = await api.get("/api/orders/my");
       const baseOrders = res.data || [];
 
-      // 2️⃣ Enrich each order with payment + notification status
+      // 2. Enrich each order with payment + notification status
       const enrichedOrders = await Promise.all(
         baseOrders.map(async (order) => {
           const orderId = order.orderId || order.id;

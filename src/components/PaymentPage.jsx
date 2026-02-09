@@ -10,7 +10,7 @@ function PaymentPage() {
   const navigate = useNavigate();
   const { state } = useLocation();
   
-  // ✅ orderId & amount come from Checkout (not user input or random)
+  // orderId & amount come from Checkout (not user input)
   const orderId = state?.orderId;
   const amount = state?.amount;
   const paymentMethod = state?.paymentMethod || 'RAZORPAY';
@@ -54,11 +54,11 @@ function PaymentPage() {
         return;
       }
 
-      // 1️⃣ Load Razorpay SDK
+      // 1. Load Razorpay SDK
       const loaded = await loadRazorpay();
       if (!loaded) throw new Error('Razorpay SDK failed to load');
 
-      // 2️⃣ Create Razorpay Order
+      // 2. Create Razorpay Order
       const { data } = await paymentAPI.createRazorpayOrder({
         orderId,
         amount,
@@ -77,7 +77,7 @@ function PaymentPage() {
 
         handler: async (response) => {
           try {
-            // 3️⃣ Verify payment signature
+            // 3. Verify payment signature
             const verifyRes = await paymentAPI.verifyRazorpayPayment({
               orderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
@@ -88,9 +88,9 @@ function PaymentPage() {
               throw new Error('Payment verification failed');
             }
 
-            // 4️⃣ Process payment (triggers Kafka → Notification)
+            // 4. Process payment (triggers Kafka -> Notification)
             try {
-              // ✅ FORMAT PHONE NUMBER FOR BACKEND/SMS (+91 country code)
+              // Ensure phone number is formatted for backend/SMS (E.164, add country code if required)
               let formattedPhone = phoneNumber.trim();
               // Remove any spaces, dashes
               formattedPhone = formattedPhone.replaceAll(/[\s\-()]/g, '');
@@ -106,7 +106,7 @@ function PaymentPage() {
                 paymentMethod: 'RAZORPAY',
                 userEmail: user?.email,
                 userName: user?.name,
-                phoneNumber: formattedPhone, // ✅ Now includes +91
+                phoneNumber: formattedPhone, // Now includes +91 if added
               });
             } catch (kafkaErr) {
               // Kafka failure - log but don't fail the payment UI
@@ -114,7 +114,7 @@ function PaymentPage() {
               // Still show success since payment was recorded in database
             }
 
-            // 5️⃣ Success - redirect to dashboard
+            // 5. Success - redirect to dashboard
             setAlertType('success');
             setAlertMessage(`Payment successful! Redirecting to orders...`);
             setTimeout(() => {

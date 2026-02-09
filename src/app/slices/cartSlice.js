@@ -57,15 +57,15 @@ export const fetchCart = createAsyncThunk("cart/fetch", async () => {
 // Add item to cart - Now expects full cart object back
 export const addItemToCart = createAsyncThunk("cart/addItem", async (item, { rejectWithValue }) => {
   try {
-    console.log("🛒 Adding item to cart:", item);
+    console.log("Adding item to cart:", item);
     const res = await api.post("/api/cart/items", item);
-    console.log("✅ Cart updated successfully:", res.data);
+    console.log("Cart updated successfully:", res.data);
     const cart = res.data || {};
     const items = cart.items || cart.Items || [];
     const enrichedItems = await mapCartItems(items);
     return { ...cart, items: enrichedItems };
   } catch (error) {
-    console.error("❌ Error adding item to cart:", error.response?.data || error.message);
+    console.error("Error adding item to cart:", error.response?.data || error.message);
     return rejectWithValue(error.response?.data || error.message);
   }
 });

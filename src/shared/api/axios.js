@@ -14,12 +14,12 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "null");
 
-    // ✅ Set Authorization header if token exists
+    // Set Authorization header if token exists
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // ✅ Set user ID header dynamically (SAFE - per request)
+    // Set user ID header dynamically (per request)
     if (user?.id) {
       config.headers["X-User-Id"] = user.id;
     } else {

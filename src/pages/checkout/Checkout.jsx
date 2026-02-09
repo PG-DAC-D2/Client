@@ -90,13 +90,13 @@ function Checkout() {
         throw new Error("Order id not returned");
       }
 
-      // ✅ REMOVED: Payment confirmation happens ONLY in PaymentPage after Razorpay verification
+      // Payment confirmation happens only in PaymentPage after Razorpay verification
       // Do NOT call confirm-payment here - let Payment Service handle it via Razorpay
 
       // clear cart
       dispatch(clearCartAPI());
 
-      // ✅ Navigate to payment page with orderId & amount
+      // Navigate to payment page with orderId & amount
       navigate("/payment", {
         state: {
           orderId,

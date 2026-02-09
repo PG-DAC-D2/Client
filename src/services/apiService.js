@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://localhost:8080',
-  timeout: 15000,  // ✅ 15 second timeout to prevent hanging
+  timeout: 15000,  // 15 second timeout to prevent hanging
   headers: {
     'Content-Type': 'application/json'
   }
@@ -22,11 +22,11 @@ api.interceptors.request.use((config) => {
   }
 
   // Log request for debugging
-  console.log(`📤 [${new Date().toISOString()}] ${config.method.toUpperCase()} ${config.url}`);
+  console.log(`[${new Date().toISOString()}] ${config.method.toUpperCase()} ${config.url}`);
 
   return config;
 }, (error) => {
-  console.error('❌ Request Error:', error.message);
+  console.error('Request Error:', error.message);
   return Promise.reject(error);
 });
 
@@ -34,7 +34,7 @@ api.interceptors.request.use((config) => {
 // RESPONSE INTERCEPTOR
 // ============================================
 api.interceptors.response.use((response) => {
-  console.log(`✅ [${new Date().toISOString()}] ${response.status} ${response.config.url}`);
+  console.log(`[${new Date().toISOString()}] ${response.status} ${response.config.url}`);
   return response;
 }, (error) => {
   // Handle timeout
@@ -52,7 +52,7 @@ api.interceptors.response.use((response) => {
     error.message = `Server error (${error.response.status}): ${error.response.data?.message || error.message}`;
   }
 
-  console.error(`❌ [${new Date().toISOString()}] ${error.response?.status || 'Error'} - ${error.message}`);
+  console.error(`[${new Date().toISOString()}] ${error.response?.status || 'Error'} - ${error.message}`);
 
   return Promise.reject(error);
 });
@@ -97,7 +97,7 @@ export const paymentAPI = {
   },
 
   // Process payment (triggers Kafka event)
-  // ✅ CRITICAL: This sends to backend which publishes to Kafka asynchronously
+  // CRITICAL: This sends to backend which publishes to Kafka asynchronously
   processPayment: async (data) => {
     try {
       const response = await api.post("/api/payments/process", {
@@ -106,7 +106,7 @@ export const paymentAPI = {
         currency: data.currency || 'INR',
         userEmail: data.userEmail,
         userName: data.userName,
-        phoneNumber: data.phoneNumber, // ✅ Already formatted with +91 if needed
+        phoneNumber: data.phoneNumber, // Already formatted with +91 if needed
         paymentMethod: data.paymentMethod || 'RAZORPAY',
         razorpayPaymentId: data.razorpayPaymentId,
         razorpayOrderId: data.razorpayOrderId,
@@ -205,5 +205,130 @@ export const notificationAPI = {
     }
   }
 };
+
+/* ================= ORDER SERVICE ================= */
+
+export const orderAPI = {
+  // Get all orders
+  getOrders: async () => {
+    try {
+      const response = await api.get("/api/orders");
+      return response;
+    } catch (error) {
+      console.error('getOrders error:', error);
+      throw error;
+    }
+  },
+
+  // Get order by ID
+  getOrderById: async (orderId) => {
+    try {
+      const response = await api.get(`/api/orders/${orderId}`);
+      return response;
+    } catch (error) {
+      console.error('getOrderById error:', error);
+      throw error;
+    }
+  },
+
+  // Create order
+  createOrder: async (data) => {
+    try {
+      const response = await api.post("/api/orders", data);
+      return response;
+    } catch (error) {
+      console.error('createOrder error:', error);
+      throw error;
+    }
+  },
+
+  // Update order
+  updateOrder: async (orderId, data) => {
+    try {
+      const response = await api.put(`/api/orders/${orderId}`, data);
+      return response;
+    } catch (error) {
+      console.error('updateOrder error:', error);
+      throw error;
+    }
+  },
+
+  // Delete order
+  deleteOrder: async (orderId) => {
+    try {
+      const response = await api.delete(`/api/orders/${orderId}`);
+      return response;
+    } catch (error) {
+      console.error('deleteOrder error:', error);
+      throw error;
+    }
+  }
+};
+
+/* ================= PRODUCT SERVICE ================= */
+
+export const productAPI = {
+  // Get all products
+  getProducts: async () => {
+    try {
+      const response = await api.get("/api/products");
+      return response;
+    } catch (error) {
+      console.error('getProducts error:', error);
+      throw error;
+    }
+  },
+
+  // Get product by ID
+  getProductById: async (productId) => {
+    try {
+      const response = await api.get(`/api/products/${productId}`);
+      return response;
+    } catch (error) {
+      console.error('getProductById error:', error);
+      throw error;
+    }
+  },
+
+  // Create product
+  createProduct: async (data) => {
+    try {
+      const response = await api.post("/api/products", data);
+      return response;
+    } catch (error) {
+      console.error('createProduct error:', error);
+      throw error;
+    }
+  },
+
+  // Update product
+  updateProduct: async (productId, data) => {
+    try {
+      const response = await api.put(`/api/products/${productId}`, data);
+      return response;
+    } catch (error) {
+      console.error('updateProduct error:', error);
+      throw error;
+    }
+  },
+
+  // Delete product
+  deleteProduct: async (productId) => {
+    try {
+      const response = await api.delete(`/api/products/${productId}`);
+      return response;
+    } catch (error) {
+      console.error('deleteProduct error:', error);
+      throw error;
+    }
+  }
+};
+
+// ============================================
+// NAMED EXPORTS FOR CONVENIENCE
+// ============================================
+
+export const getOrders = orderAPI.getOrders;
+export const getProducts = productAPI.getProducts;
 
 export default api;
